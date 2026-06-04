@@ -151,7 +151,7 @@ export default function DashboardPage() {
               {places.length} result{places.length !== 1 ? "s" : ""}
               {places.length === 100 && " — showing first 100, narrow your filters for more"}
             </p>
-            <PlacesTable places={places} onPlacesChange={setPlaces} />
+            <PlacesTable places={places} onPlacesChange={(updater) => setPlaces((prev) => updater(prev ?? []))} />
           </>
         )}
       </main>
