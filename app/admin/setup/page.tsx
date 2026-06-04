@@ -1,14 +1,34 @@
-import SetupForm from "@/components/SetupForm";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/config";
-import { redirect } from "next/navigation";
+import SetupForm from "@/components/SetupForm";
 
-export const metadata = { title: "Admin Setup — Neptou" };
+export default function SetupPage() {
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
 
-export default async function SetupPage() {
-  const res = await fetch(`${BACKEND_URL}/admin/status`, { cache: "no-store" }).catch(() => null);
-  const data = res ? await res.json().catch(() => ({ has_admins: false })) : { has_admins: false };
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/admin/status`)
+      .then((res) => res.json())
+      .catch(() => ({ has_admins: false }))
+      .then((data) => {
+        if (data.has_admins) {
+          router.replace("/admin/login");
+        } else {
+          setReady(true);
+        }
+      });
+  }, [router]);
 
-  if (data.has_admins) redirect("/admin/login");
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <p className="text-gray-400">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">

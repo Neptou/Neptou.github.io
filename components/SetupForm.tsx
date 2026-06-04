@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/config";
 
 export default function SetupForm() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function SetupForm() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/admin/register", {
+    const res = await fetch(`${BACKEND_URL}/admin/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password, setup_secret: setupSecret }),
@@ -28,7 +29,7 @@ export default function SetupForm() {
       router.push("/admin/login");
     } else {
       const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Registration failed");
+      setError(data.detail ?? data.error ?? "Registration failed");
     }
   }
 

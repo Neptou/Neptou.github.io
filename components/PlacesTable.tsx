@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import PlaceModal from "./PlaceModal";
+import { BACKEND_URL } from "@/lib/config";
+import { getToken } from "@/lib/auth";
 
 export interface Place {
   id: string;
@@ -29,7 +31,11 @@ export default function PlacesTable({ initialPlaces }: { initialPlaces: Place[] 
   async function handleDelete(place: Place) {
     if (!confirm(`Delete "${place.name}"? This cannot be undone.`)) return;
     setDeleting(place.id);
-    const res = await fetch(`/api/admin/places/${place.id}`, { method: "DELETE" });
+    const token = getToken();
+    const res = await fetch(`${BACKEND_URL}/admin/places/${place.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token ?? ""}` },
+    });
     setDeleting(null);
     if (res.ok) {
       setPlaces((prev) => prev.filter((p) => p.id !== place.id));

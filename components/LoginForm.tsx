@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/config";
+import { setToken } from "@/lib/auth";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -15,7 +17,7 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/admin/login", {
+    const res = await fetch(`${BACKEND_URL}/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -24,10 +26,12 @@ export default function LoginForm() {
     setLoading(false);
 
     if (res.ok) {
+      const { token } = await res.json();
+      setToken(token);
       router.push("/admin/dashboard");
     } else {
       const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Login failed");
+      setError(data.detail ?? data.error ?? "Login failed");
     }
   }
 

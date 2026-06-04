@@ -1,12 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { getToken, clearToken } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/config";
 
 export default function AdminHeader() {
   const router = useRouter();
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    const token = getToken();
+    if (token) {
+      await fetch(`${BACKEND_URL}/admin/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    clearToken();
     router.push("/admin/login");
   }
 

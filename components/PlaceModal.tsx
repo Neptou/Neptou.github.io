@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { Place } from "./PlacesTable";
+import { BACKEND_URL } from "@/lib/config";
+import { getToken } from "@/lib/auth";
 
 interface Props {
   mode: "add" | "edit";
@@ -38,12 +40,18 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
       geohash: form.geohash,
     };
 
-    const url = mode === "edit" ? `/api/admin/places/${place!.id}` : "/api/admin/places";
+    const url = mode === "edit"
+      ? `${BACKEND_URL}/admin/places/${place!.id}`
+      : `${BACKEND_URL}/admin/places`;
     const method = mode === "edit" ? "PUT" : "POST";
+    const token = getToken();
 
     const res = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ?? ""}`,
+      },
       body: JSON.stringify(body),
     });
 

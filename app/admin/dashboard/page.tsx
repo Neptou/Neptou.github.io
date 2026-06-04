@@ -1,26 +1,59 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getToken } from "@/lib/auth";
 import { BACKEND_URL } from "@/lib/config";
 import PlacesTable from "@/components/PlacesTable";
 import AdminHeader from "@/components/AdminHeader";
+import type { Place } from "@/components/PlacesTable";
 
-export const metadata = { title: "Dashboard — Neptou Admin" };
+export default function DashboardPage() {
+  const router = useRouter();
+  const [places, setPlaces] = useState<Place[] | null>(null);
+  const [error, setError] = useState("");
 
-async function fetchPlaces(token: string) {
-  const res = await fetch(`${BACKEND_URL}/admin/places`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
-  if (res.status === 401) return null;
-  return res.json().catch(() => []);
-}
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      router.replace("/admin/login");
+      return;
+    }
 
-export default async function DashboardPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token")?.value ?? "";
-  const places = await fetchPlaces(token);
+    fetch(`${BACKEND_URL}/admin/places`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          router.replace("/admin/login");
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data) setPlaces(data);
+      })
+      .catch(() => setError("Failed to load places."));
+  }, [router]);
 
-  if (places === null) redirect("/admin/login");
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <AdminHeader />
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          <p className="text-red-400">{error}</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (places === null) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <p className="text-gray-400">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
