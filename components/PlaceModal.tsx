@@ -35,6 +35,9 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
     opening_hours: place?.opening_hours ?? "",
     entry_fee: place?.entry_fee ?? "",
     image_url: place?.image_url ?? "",
+    image_author: place?.image_author ?? "",
+    image_license: place?.image_license ?? "",
+    image_source_url: place?.image_source_url ?? "",
     division_id: place?.division_id ?? "",
   });
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -80,6 +83,9 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
       opening_hours: form.opening_hours || null,
       entry_fee: form.entry_fee || null,
       image_url: form.image_url || null,
+      image_author: form.image_author || null,
+      image_license: form.image_license || null,
+      image_source_url: form.image_source_url || null,
       division_id: form.division_id || null,
     };
 
@@ -260,7 +266,44 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
               value={form.image_url}
               onChange={(e) => update("image_url", e.target.value)}
               className={inputCls}
-              placeholder="https://…"
+              placeholder="https://upload.wikimedia.org/…"
+            />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Photo Author">
+              <input
+                type="text"
+                value={form.image_author}
+                onChange={(e) => update("image_author", e.target.value)}
+                className={inputCls}
+                placeholder="Author name"
+              />
+            </Field>
+            <Field label="License">
+              <select
+                value={form.image_license}
+                onChange={(e) => update("image_license", e.target.value)}
+                className={inputCls}
+              >
+                <option value="">— None —</option>
+                <option value="CC BY 4.0">CC BY 4.0</option>
+                <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                <option value="CC BY 2.0">CC BY 2.0</option>
+                <option value="CC BY-SA 2.0">CC BY-SA 2.0</option>
+                <option value="CC0 1.0">CC0 1.0 (Public Domain)</option>
+                <option value="Public Domain">Public Domain</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Wikimedia Source URL">
+            <input
+              type="url"
+              value={form.image_source_url}
+              onChange={(e) => update("image_source_url", e.target.value)}
+              className={inputCls}
+              placeholder="https://commons.wikimedia.org/wiki/File:…"
             />
           </Field>
 

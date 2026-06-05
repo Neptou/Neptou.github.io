@@ -21,6 +21,9 @@ export interface Place {
   opening_hours: string | null;
   entry_fee: string | null;
   image_url: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
   division_id: string | null;
   country: string | null;
   state: string | null;
