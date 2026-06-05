@@ -49,7 +49,7 @@ export default function HomePage() {
 
         <p className="text-lg sm:text-xl text-gray-400 max-w-2xl leading-relaxed mb-10">
           Neptou guides you through Nepal&apos;s most stunning destinations — from ancient temples in
-          Kathmandu to hidden valleys in the Himalayas. 400+ curated places, all in your pocket.
+          Kathmandu to hidden valleys in the Himalayas. Handpicked places, all in your pocket.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">
@@ -167,9 +167,9 @@ export default function HomePage() {
 const features = [
   {
     icon: "🗺️",
-    title: "400+ Curated Places",
+    title: "Curated Places",
     description:
-      "Temples, trekking routes, viewpoints, local restaurants, and hidden gems across every district of Nepal.",
+      "Temples, trekking routes, viewpoints, local restaurants, and hidden gems handpicked from across Nepal.",
   },
   {
     icon: "🧭",
@@ -204,7 +204,7 @@ const features = [
 ];
 
 const stats = [
-  { value: "400+", label: "Places" },
+  { value: "20+", label: "Places" },
   { value: "77", label: "Districts" },
   { value: "8", label: "Languages" },
   { value: "Free", label: "Always" },
