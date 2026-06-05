@@ -265,10 +265,24 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
                 )}
 
                 {show("image") && (
-                  <td className="px-4 py-3">
-                    {place.image_url
-                      ? <img src={place.image_url} alt="" className="w-10 h-10 object-cover rounded-lg" />
-                      : <span className="text-gray-600 text-xs">—</span>}
+                  <td className="px-4 py-3 max-w-[180px]">
+                    {place.image_url ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-gray-400 text-xs truncate block" title={place.image_url}>
+                          {place.image_url.replace(/^https?:\/\//, "").slice(0, 40)}…
+                        </span>
+                        <a
+                          href={place.image_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-400 hover:text-blue-300 transition-colors w-fit"
+                        >
+                          View ↗
+                        </a>
+                      </div>
+                    ) : (
+                      <span className="text-gray-600 text-xs">—</span>
+                    )}
                   </td>
                 )}
 
