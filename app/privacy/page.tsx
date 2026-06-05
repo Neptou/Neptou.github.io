@@ -1,12 +1,18 @@
+import Image from "next/image";
+
 export default function PrivacyPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-950 text-white font-[family-name:var(--font-geist-sans)]">
       {/* Nav */}
       <nav className="px-6 py-5 flex items-center justify-between max-w-7xl mx-auto w-full">
         <a href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-lg">
-            <span className="text-sm font-bold text-white">N</span>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Neptou"
+            width={36}
+            height={36}
+            className="rounded-xl shadow-lg"
+          />
           <span className="font-semibold text-lg tracking-tight">Neptou</span>
         </a>
         <a
@@ -163,9 +169,13 @@ export default function PrivacyPage() {
       <footer className="border-t border-gray-800 px-6 py-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
-              <span className="text-xs font-bold text-white">N</span>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Neptou"
+              width={20}
+              height={20}
+              className="rounded"
+            />
             <span>© {new Date().getFullYear()} Neptou. All rights reserved.</span>
           </div>
           <div className="flex gap-6">
