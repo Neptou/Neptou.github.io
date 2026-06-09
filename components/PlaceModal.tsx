@@ -289,6 +289,8 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
                 <option value="">— None —</option>
                 <option value="CC BY 4.0">CC BY 4.0</option>
                 <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                <option value="CC BY 3.0">CC BY 3.0</option>
+                <option value="CC BY-SA 3.0">CC BY-SA 3.0</option>
                 <option value="CC BY 2.0">CC BY 2.0</option>
                 <option value="CC BY-SA 2.0">CC BY-SA 2.0</option>
                 <option value="CC0 1.0">CC0 1.0 (Public Domain)</option>
