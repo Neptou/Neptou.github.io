@@ -23,13 +23,19 @@ app/
     login/page.tsx    ← admin login form
     setup/page.tsx    ← first-time admin account creation
     dashboard/page.tsx← places search + filter table (main admin UI)
+    foods/page.tsx    ← foods CRUD list + search
+    emergency-contacts/page.tsx ← emergency contacts CRUD list + search
 components/
   BackendPing.tsx     ← fires GET /health on mount to warm Render cold start
-  AdminHeader.tsx     ← top nav for admin pages
+  AdminHeader.tsx     ← top nav for admin pages (tabs: Places / Foods / Emergency Contacts)
   LoginForm.tsx       ← login form component
   SetupForm.tsx       ← setup form component
   PlacesTable.tsx     ← places table with inline Edit / Delete actions
   PlaceModal.tsx      ← add/edit place modal (fetches /admin/divisions for dropdown)
+  FoodsTable.tsx      ← foods table with inline Edit / Delete actions
+  FoodModal.tsx       ← add/edit food modal
+  EmergencyContactsTable.tsx ← emergency contacts table
+  EmergencyContactModal.tsx  ← add/edit emergency contact modal
 lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
   auth.ts             ← localStorage token helpers (getToken / setToken / clearToken)
