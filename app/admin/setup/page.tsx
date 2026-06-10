@@ -10,17 +10,21 @@ export default function SetupPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetch(`${BACKEND_URL}/admin/status`)
       .then((res) => res.json())
       .catch(() => ({ has_admins: false }))
       .then((data) => {
+        if (cancelled) return;
         if (data.has_admins) {
           router.replace("/admin/login");
         } else {
           setReady(true);
         }
       });
-  }, [router]);
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!ready) {
     return (

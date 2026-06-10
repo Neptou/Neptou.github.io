@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { getToken } from "@/lib/auth";
-import { BACKEND_URL } from "@/lib/config";
+import { authFetch, AuthError } from "@/lib/auth";
 import PlacesTable from "@/components/PlacesTable";
 import AdminHeader from "@/components/AdminHeader";
 import type { Place } from "@/components/PlacesTable";
@@ -25,7 +23,6 @@ const emptyFilters: Filters = {
 };
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [places, setPlaces] = useState<Place[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,8 +34,6 @@ export default function DashboardPage() {
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    const token = getToken();
-    if (!token) { router.replace("/admin/login"); return; }
 
     const params = new URLSearchParams();
     if (filters.name)         params.set("name", filters.name);
@@ -51,13 +46,11 @@ export default function DashboardPage() {
     setError("");
 
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/places?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status === 401) { router.replace("/admin/login"); return; }
+      const res = await authFetch(`/admin/places?${params}`);
       if (!res.ok) throw new Error();
       setPlaces(await res.json());
-    } catch {
+    } catch (e) {
+      if (e instanceof AuthError) return;
       setError("Failed to load places.");
     } finally {
       setLoading(false);

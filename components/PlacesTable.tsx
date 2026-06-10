@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import PlaceModal from "./PlaceModal";
-import { BACKEND_URL } from "@/lib/config";
-import { getToken } from "@/lib/auth";
+import { authFetch, AuthError } from "@/lib/auth";
 
 export interface Place {
   id: string;
@@ -59,6 +58,7 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
     { mode: "add" } | { mode: "edit"; place: Place } | null
   >(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
   const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(DEFAULT_VISIBLE);
   const [colMenuOpen, setColMenuOpen] = useState(false);
   const colMenuRef = useRef<HTMLDivElement>(null);
@@ -88,16 +88,15 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
   async function handleDelete(place: Place) {
     if (!confirm(`Delete "${place.name}"? This cannot be undone.`)) return;
     setDeleting(place.id);
-    const token = getToken();
-    const res = await fetch(`${BACKEND_URL}/admin/places/${place.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token ?? ""}` },
-    });
-    setDeleting(null);
-    if (res.ok) {
+    setActionError("");
+    try {
+      const res = await authFetch(`/admin/places/${place.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       onPlacesChange((prev) => prev.filter((p) => p.id !== place.id));
-    } else {
-      alert("Failed to delete place.");
+    } catch (e) {
+      if (!(e instanceof AuthError)) setActionError(`Failed to delete "${place.name}".`);
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -177,6 +176,8 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
           + Add place
         </button>
       </div>
+
+      {actionError && <p className="text-red-400 text-sm mb-3">{actionError}</p>}
 
       <div className="rounded-xl border border-gray-800 overflow-x-auto">
         <table className="w-full text-sm">

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import EmergencyContactModal from "./EmergencyContactModal";
-import { BACKEND_URL } from "@/lib/config";
-import { getToken } from "@/lib/auth";
+import { authFetch, AuthError } from "@/lib/auth";
 
 export interface EmergencyContact {
   id: string;
@@ -28,20 +27,20 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
     { mode: "add" } | { mode: "edit"; contact: EmergencyContact } | null
   >(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
 
   async function handleDelete(contact: EmergencyContact) {
     if (!confirm(`Delete "${contact.name}"? This cannot be undone.`)) return;
     setDeleting(contact.id);
-    const token = getToken();
-    const res = await fetch(`${BACKEND_URL}/admin/emergency-contacts/${contact.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token ?? ""}` },
-    });
-    setDeleting(null);
-    if (res.ok) {
+    setActionError("");
+    try {
+      const res = await authFetch(`/admin/emergency-contacts/${contact.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       onContactsChange((prev) => prev.filter((c) => c.id !== contact.id));
-    } else {
-      alert("Failed to delete contact.");
+    } catch (e) {
+      if (!(e instanceof AuthError)) setActionError(`Failed to delete "${contact.name}".`);
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -64,6 +63,8 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
           + Add contact
         </button>
       </div>
+
+      {actionError && <p className="text-red-400 text-sm mb-3">{actionError}</p>}
 
       <div className="rounded-xl border border-gray-800 overflow-x-auto">
         <table className="w-full text-sm">

@@ -1,27 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getToken } from "@/lib/auth";
-import { BACKEND_URL } from "@/lib/config";
+import { authFetch, AuthError } from "@/lib/auth";
 import AdminHeader from "@/components/AdminHeader";
 import FoodsTable from "@/components/FoodsTable";
 import type { Food } from "@/components/FoodsTable";
 
 export default function FoodsPage() {
-  const router = useRouter();
   const [foods, setFoods] = useState<Food[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
 
   async function load(query: string) {
-    const token = getToken();
-    if (!token) {
-      router.replace("/admin/login");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
@@ -29,16 +20,11 @@ export default function FoodsPage() {
     if (query) params.set("name", query);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/foods?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status === 401) {
-        router.replace("/admin/login");
-        return;
-      }
+      const res = await authFetch(`/admin/foods?${params}`);
       if (!res.ok) throw new Error();
       setFoods(await res.json());
-    } catch {
+    } catch (e) {
+      if (e instanceof AuthError) return;
       setError("Failed to load foods.");
     } finally {
       setLoading(false);

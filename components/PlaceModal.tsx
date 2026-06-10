@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Place } from "./PlacesTable";
-import { BACKEND_URL } from "@/lib/config";
-import { getToken } from "@/lib/auth";
+import { authFetch, AuthError } from "@/lib/auth";
 
 interface Division {
   id: string;
@@ -45,10 +44,7 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-    fetch(`${BACKEND_URL}/admin/divisions`, {
-      headers: { Authorization: `Bearer ${token ?? ""}` },
-    })
+    authFetch(`/admin/divisions`)
       .then((r) => r.json())
       .then(setDivisions)
       .catch(() => {});
@@ -89,20 +85,21 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
       division_id: form.division_id || null,
     };
 
-    const url =
-      mode === "edit"
-        ? `${BACKEND_URL}/admin/places/${place!.id}`
-        : `${BACKEND_URL}/admin/places`;
-    const token = getToken();
+    const path =
+      mode === "edit" ? `/admin/places/${place!.id}` : `/admin/places`;
 
-    const res = await fetch(url, {
-      method: mode === "edit" ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
-      },
-      body: JSON.stringify(body),
-    });
+    let res: Response;
+    try {
+      res = await authFetch(path, {
+        method: mode === "edit" ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      setLoading(false);
+      if (!(e instanceof AuthError)) setError("Network error — please try again.");
+      return;
+    }
 
     setLoading(false);
 

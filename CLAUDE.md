@@ -1,9 +1,14 @@
 @../CLAUDE.md
-@AGENTS.md
 
 # NeptouWeb — CLAUDE.md
 
-This file provides guidance specific to the Next.js web project.
+This file provides guidance specific to the Next.js web project. (`AGENTS.md` is a symlink to this file.)
+
+<!-- BEGIN:nextjs-agent-rules -->
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
 
 ## Stack
 
@@ -38,8 +43,7 @@ components/
   EmergencyContactModal.tsx  ← add/edit emergency contact modal
 lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
-  auth.ts             ← localStorage token helpers (getToken / setToken / clearToken)
-proxy.ts              ← Next.js middleware: redirects unauthenticated /admin/* to /admin/login
+  auth.ts             ← token helpers (getToken / setToken / clearToken) + authFetch (Bearer header, 401 → login redirect)
 ```
 
 ## Dev & Build
@@ -67,13 +71,13 @@ The `NEXT_PUBLIC_BACKEND_URL` Actions variable is set to `https://neptou-backend
 
 ## Backend Connection
 
-All backend calls use `BACKEND_URL` from `lib/config.ts`. Admin routes require a Bearer token stored in `localStorage` (via `lib/auth.ts`) and set as a cookie for the middleware auth check.
+All admin calls go through `authFetch()` in `lib/auth.ts` — it attaches the Bearer token from `localStorage`, and on a missing token or a 401 it clears the token, redirects to `/admin/login/`, and throws `AuthError` (callers catch and ignore it). There is no middleware: this is a static export, so real access control is the backend's JWT check; the client-side redirect is UX only. Public calls (login, setup, `/health`) use plain `fetch` with `BACKEND_URL` from `lib/config.ts`.
 
 `BackendPing` fires a silent `GET /health` on every page load to warm up the Render free-tier instance before users reach the admin panel — no UI impact on failure.
 
 ## Key Patterns
 
-- **Auth flow**: login → JWT stored in `localStorage` via `setToken()` + cookie for middleware → `getToken()` used in fetch headers
+- **Auth flow**: login → JWT stored in `localStorage` via `setToken()` → all admin requests via `authFetch()` (adds header, handles missing-token and 401 by redirecting to login)
 - **Static export**: no server-side code at runtime; all API calls are client-side fetches to the Render backend
 - **`trailingSlash: true`**: all routes have trailing slashes (required for GitHub Pages path resolution)
 - **`onPlacesChange` prop**: `PlacesTable` takes `(updater: (prev: Place[]) => Place[]) => void` — callers must wrap `setState` accordingly (see `dashboard/page.tsx`)

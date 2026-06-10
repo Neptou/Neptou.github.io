@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import FoodModal from "./FoodModal";
-import { BACKEND_URL } from "@/lib/config";
-import { getToken } from "@/lib/auth";
+import { authFetch, AuthError } from "@/lib/auth";
 
 export interface Food {
   id: string;
@@ -27,20 +26,20 @@ export default function FoodsTable({ foods, onFoodsChange }: Props) {
     { mode: "add" } | { mode: "edit"; food: Food } | null
   >(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
 
   async function handleDelete(food: Food) {
     if (!confirm(`Delete "${food.name}"? This cannot be undone.`)) return;
     setDeleting(food.id);
-    const token = getToken();
-    const res = await fetch(`${BACKEND_URL}/admin/foods/${food.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token ?? ""}` },
-    });
-    setDeleting(null);
-    if (res.ok) {
+    setActionError("");
+    try {
+      const res = await authFetch(`/admin/foods/${food.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       onFoodsChange((prev) => prev.filter((f) => f.id !== food.id));
-    } else {
-      alert("Failed to delete food.");
+    } catch (e) {
+      if (!(e instanceof AuthError)) setActionError(`Failed to delete "${food.name}".`);
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -63,6 +62,8 @@ export default function FoodsTable({ foods, onFoodsChange }: Props) {
           + Add food
         </button>
       </div>
+
+      {actionError && <p className="text-red-400 text-sm mb-3">{actionError}</p>}
 
       <div className="rounded-xl border border-gray-800 overflow-x-auto">
         <table className="w-full text-sm">

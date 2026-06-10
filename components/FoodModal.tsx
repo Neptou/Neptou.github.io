@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import type { Food } from "./FoodsTable";
-import { BACKEND_URL } from "@/lib/config";
-import { getToken } from "@/lib/auth";
+import { authFetch, AuthError } from "@/lib/auth";
 
 interface Props {
   mode: "add" | "edit";
@@ -55,20 +54,21 @@ export default function FoodModal({ mode, food, onSaved, onClose }: Props) {
       region: form.region || null,
     };
 
-    const url =
-      mode === "edit"
-        ? `${BACKEND_URL}/admin/foods/${food!.id}`
-        : `${BACKEND_URL}/admin/foods`;
-    const token = getToken();
+    const path =
+      mode === "edit" ? `/admin/foods/${food!.id}` : `/admin/foods`;
 
-    const res = await fetch(url, {
-      method: mode === "edit" ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
-      },
-      body: JSON.stringify(body),
-    });
+    let res: Response;
+    try {
+      res = await authFetch(path, {
+        method: mode === "edit" ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      setLoading(false);
+      if (!(e instanceof AuthError)) setError("Network error — please try again.");
+      return;
+    }
 
     setLoading(false);
 
