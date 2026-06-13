@@ -292,6 +292,7 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
                 <option value="CC BY-SA 2.0">CC BY-SA 2.0</option>
                 <option value="CC0 1.0">CC0 1.0 (Public Domain)</option>
                 <option value="Public Domain">Public Domain</option>
+                <option value="Pexels License">Pexels License</option>
               </select>
             </Field>
           </div>

@@ -12,6 +12,9 @@ export interface Food {
   category: string | null;
   image_url: string | null;
   image_name: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
   is_vegetarian: boolean;
   region: string | null;
 }

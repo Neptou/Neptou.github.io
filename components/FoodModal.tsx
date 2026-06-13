@@ -28,6 +28,9 @@ export default function FoodModal({ mode, food, onSaved, onClose }: Props) {
     category: food?.category ?? "",
     image_url: food?.image_url ?? "",
     image_name: food?.image_name ?? "",
+    image_author: food?.image_author ?? "",
+    image_license: food?.image_license ?? "",
+    image_source_url: food?.image_source_url ?? "",
     is_vegetarian: food?.is_vegetarian ?? false,
     region: food?.region ?? "",
   });
@@ -50,6 +53,9 @@ export default function FoodModal({ mode, food, onSaved, onClose }: Props) {
       category: form.category || null,
       image_url: form.image_url || null,
       image_name: form.image_name || null,
+      image_author: form.image_author || null,
+      image_license: form.image_license || null,
+      image_source_url: form.image_source_url || null,
       is_vegetarian: form.is_vegetarian,
       region: form.region || null,
     };
@@ -162,6 +168,46 @@ export default function FoodModal({ mode, food, onSaved, onClose }: Props) {
               onChange={(e) => update("image_url", e.target.value)}
               className={inputCls}
               placeholder="https://…"
+            />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Photo Author">
+              <input
+                type="text"
+                value={form.image_author}
+                onChange={(e) => update("image_author", e.target.value)}
+                className={inputCls}
+                placeholder="Author name"
+              />
+            </Field>
+            <Field label="License">
+              <select
+                value={form.image_license}
+                onChange={(e) => update("image_license", e.target.value)}
+                className={inputCls}
+              >
+                <option value="">— None —</option>
+                <option value="CC BY 4.0">CC BY 4.0</option>
+                <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                <option value="CC BY 3.0">CC BY 3.0</option>
+                <option value="CC BY-SA 3.0">CC BY-SA 3.0</option>
+                <option value="CC BY 2.0">CC BY 2.0</option>
+                <option value="CC BY-SA 2.0">CC BY-SA 2.0</option>
+                <option value="CC0 1.0">CC0 1.0 (Public Domain)</option>
+                <option value="Public Domain">Public Domain</option>
+                <option value="Pexels License">Pexels License</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Wikimedia Source URL">
+            <input
+              type="url"
+              value={form.image_source_url}
+              onChange={(e) => update("image_source_url", e.target.value)}
+              className={inputCls}
+              placeholder="https://commons.wikimedia.org/wiki/File:…"
             />
           </Field>
 
