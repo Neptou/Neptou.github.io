@@ -29,6 +29,7 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
     longitude: place?.longitude?.toString() ?? "",
     geohash: place?.geohash ?? "",
     is_hidden_gem: place?.is_hidden_gem ?? false,
+    tips: (place?.tips ?? []).join("\n"),
     rating: place?.rating?.toString() ?? "",
     review_count: place?.review_count?.toString() ?? "",
     opening_hours: place?.opening_hours ?? "",
@@ -74,6 +75,12 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
       longitude: form.longitude ? parseFloat(form.longitude) : null,
       geohash: form.geohash || null,
       is_hidden_gem: form.is_hidden_gem,
+      // One tip per line; trim and drop blanks. Sent as an array so the backend
+      // (COALESCE(tips)) persists edits instead of leaving tips untouched.
+      tips: form.tips
+        .split("\n")
+        .map((t) => t.trim())
+        .filter(Boolean),
       rating: form.rating ? parseFloat(form.rating) : null,
       review_count: form.review_count ? parseInt(form.review_count) : null,
       opening_hours: form.opening_hours || null,
@@ -156,6 +163,16 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
               rows={3}
               className={inputCls + " resize-none"}
               placeholder="Short description of the place…"
+            />
+          </Field>
+
+          <Field label="Tips (one per line)">
+            <textarea
+              value={form.tips}
+              onChange={(e) => update("tips", e.target.value)}
+              rows={3}
+              className={inputCls + " resize-none"}
+              placeholder={"Arrive early to avoid crowds\nCarry cash for the entry fee"}
             />
           </Field>
 
