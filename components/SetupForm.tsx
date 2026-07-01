@@ -17,19 +17,25 @@ export default function SetupForm() {
     setError("");
     setLoading(true);
 
-    const res = await fetch(`${BACKEND_URL}/admin/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, setup_secret: setupSecret }),
-    });
+    try {
+      const res = await fetch(`${BACKEND_URL}/admin/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, setup_secret: setupSecret }),
+      });
 
-    setLoading(false);
-
-    if (res.ok) {
-      router.push("/admin/login");
-    } else {
-      const data = await res.json().catch(() => ({}));
-      setError(data.detail ?? data.error ?? "Registration failed");
+      if (res.ok) {
+        router.push("/admin/login");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.detail ?? data.error ?? "Registration failed");
+      }
+    } catch {
+      // Network failure (often a Render cold start) — surface it instead of
+      // leaving the button stuck on "Creating account…".
+      setError("Network error — the server may be waking up. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 

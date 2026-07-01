@@ -17,21 +17,27 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
 
-    const res = await fetch(`${BACKEND_URL}/admin/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch(`${BACKEND_URL}/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    setLoading(false);
-
-    if (res.ok) {
-      const { token } = await res.json();
-      setToken(token);
-      router.push("/admin/dashboard");
-    } else {
-      const data = await res.json().catch(() => ({}));
-      setError(data.detail ?? data.error ?? "Login failed");
+      if (res.ok) {
+        const { token } = await res.json();
+        setToken(token);
+        router.push("/admin/dashboard");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.detail ?? data.error ?? "Login failed");
+      }
+    } catch {
+      // Network failure (often a Render cold start) — surface it instead of
+      // leaving the button stuck on "Signing in…".
+      setError("Network error — the server may be waking up. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 

@@ -15,6 +15,7 @@ const CATEGORY_OPTIONS = [
   "Staples",
   "Street Food",
   "Newari Specials",
+  "Tharu Specials",
   "Dessert",
   "Drink",
   "Snack",
