@@ -5,10 +5,11 @@ import EmergencyContactModal from "./EmergencyContactModal";
 import { authFetch, AuthError } from "@/lib/auth";
 
 export interface EmergencyContact {
-  id: string;
+  id: number;
   name: string;
   phone: string;
   category: string | null;
+  province: string | null;
   description: string | null;
   available_24_7: boolean;
   languages: string[] | null;
@@ -26,7 +27,7 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
   const [modalState, setModalState] = useState<
     { mode: "add" } | { mode: "edit"; contact: EmergencyContact } | null
   >(null);
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [actionError, setActionError] = useState("");
 
   async function handleDelete(contact: EmergencyContact) {
@@ -73,6 +74,7 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
               <th className="px-4 py-3 text-left whitespace-nowrap">Name</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Phone</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Category</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">Province</th>
               <th className="px-4 py-3 text-left">Description</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">24/7</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Languages</th>
@@ -83,7 +85,7 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
           <tbody className="divide-y divide-gray-800">
             {contacts.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                   No emergency contacts found.
                 </td>
               </tr>
@@ -104,6 +106,9 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
                   ) : (
                     <span className="text-gray-600">—</span>
                   )}
+                </td>
+                <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
+                  {c.province ?? <span className="text-gray-600">—</span>}
                 </td>
                 <td className="px-4 py-3 text-gray-400 max-w-md truncate">
                   {c.description ?? "—"}

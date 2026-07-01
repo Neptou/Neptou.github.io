@@ -25,6 +25,7 @@ export default function EmergencyContactModal({ mode, contact, onSaved, onClose 
     name: contact?.name ?? "",
     phone: contact?.phone ?? "",
     category: contact?.category ?? "",
+    province: contact?.province ?? "",
     description: contact?.description ?? "",
     available_24_7: contact?.available_24_7 ?? false,
     languages: (contact?.languages ?? []).join(", "),
@@ -53,6 +54,7 @@ export default function EmergencyContactModal({ mode, contact, onSaved, onClose 
       name: form.name,
       phone: form.phone,
       category: form.category || null,
+      province: form.province || null,
       description: form.description || null,
       available_24_7: form.available_24_7,
       languages: languages.length ? languages : null,
@@ -143,6 +145,18 @@ export default function EmergencyContactModal({ mode, contact, onSaved, onClose 
                 ))}
               </select>
             </Field>
+            <Field label="Province">
+              <input
+                type="text"
+                value={form.province}
+                onChange={(e) => update("province", e.target.value)}
+                className={inputCls}
+                placeholder="Bagmati"
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <Field label="Last Verified">
               <input
                 type="date"
