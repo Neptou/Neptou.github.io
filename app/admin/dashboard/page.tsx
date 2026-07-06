@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authFetch, AuthError } from "@/lib/auth";
 import PlacesTable from "@/components/PlacesTable";
 import AdminHeader from "@/components/AdminHeader";
@@ -8,25 +8,59 @@ import type { Place } from "@/components/PlacesTable";
 
 interface Filters {
   name: string;
+  category: string;
   country: string;
   state: string;
   district: string;
   municipality: string;
+  is_hidden_gem: string; // "all" | "true" | "false"
 }
+
+interface FilterOptions {
+  countries: string[];
+  states: string[];
+  districts: string[];
+  municipalities: string[];
+}
+
+// Fixed enum — matches PlaceIn.category on the backend (admin_places.py).
+const CATEGORY_OPTIONS = ["temple", "culture", "nature", "food", "trek", "viewpoint", "unclassified"];
 
 const emptyFilters: Filters = {
   name: "",
+  category: "",
   country: "",
   state: "",
   district: "",
   municipality: "",
+  is_hidden_gem: "all",
 };
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
+  const [options, setOptions] = useState<FilterOptions>({
+    countries: [],
+    states: [],
+    districts: [],
+    municipalities: [],
+  });
   const [places, setPlaces] = useState<Place[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Load the dropdown options once.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await authFetch("/admin/places/filters");
+        if (!res.ok) throw new Error();
+        setOptions(await res.json());
+      } catch (e) {
+        if (e instanceof AuthError) return;
+        // Non-fatal — dropdowns just show "— Any —" until options arrive.
+      }
+    })();
+  }, []);
 
   function update(field: keyof Filters, value: string) {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -37,10 +71,12 @@ export default function DashboardPage() {
 
     const params = new URLSearchParams();
     if (filters.name)         params.set("name", filters.name);
+    if (filters.category)     params.set("category", filters.category);
     if (filters.country)      params.set("country", filters.country);
     if (filters.state)        params.set("state", filters.state);
     if (filters.district)     params.set("district", filters.district);
     if (filters.municipality) params.set("municipality", filters.municipality);
+    if (filters.is_hidden_gem !== "all") params.set("is_hidden_gem", filters.is_hidden_gem);
 
     setLoading(true);
     setError("");
@@ -84,30 +120,48 @@ export default function DashboardPage() {
               onChange={(v) => update("name", v)}
               placeholder="Swayambhunath…"
             />
-            <FilterInput
+            <FilterSelect
+              label="Category"
+              value={filters.category}
+              onChange={(v) => update("category", v)}
+              options={CATEGORY_OPTIONS}
+            />
+            <FilterSelect
               label="Country"
               value={filters.country}
               onChange={(v) => update("country", v)}
-              placeholder="Nepal…"
+              options={options.countries}
             />
-            <FilterInput
+            <FilterSelect
               label="State / Province"
               value={filters.state}
               onChange={(v) => update("state", v)}
-              placeholder="Bagmati…"
+              options={options.states}
             />
-            <FilterInput
+            <FilterSelect
               label="District"
               value={filters.district}
               onChange={(v) => update("district", v)}
-              placeholder="Kathmandu…"
+              options={options.districts}
             />
-            <FilterInput
+            <FilterSelect
               label="Municipality"
               value={filters.municipality}
               onChange={(v) => update("municipality", v)}
-              placeholder="Kathmandu Metropolitan…"
+              options={options.municipalities}
             />
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1">Hidden gem</label>
+              <select
+                value={filters.is_hidden_gem}
+                onChange={(e) => update("is_hidden_gem", e.target.value)}
+                className={selectCls}
+              >
+                <option value="all">— All —</option>
+                <option value="true">Hidden gems only</option>
+                <option value="false">Regular only</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -152,6 +206,9 @@ export default function DashboardPage() {
   );
 }
 
+const selectCls =
+  "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500 transition-colors text-sm";
+
 function FilterInput({
   label,
   value,
@@ -173,6 +230,32 @@ function FilterInput({
         placeholder={placeholder}
         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-red-500 transition-colors text-sm"
       />
+    </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-400 mb-1">{label}</label>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className={selectCls}>
+        <option value="">— Any —</option>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
