@@ -13,15 +13,66 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://neptou.github.io";
+const DESCRIPTION =
+  "Neptou is your free iOS travel companion for Nepal — discover hundreds of curated destinations, explore an interactive map, plan trips, get AI travel help, and reach emergency services fast. Now on the App Store.";
+
 export const metadata: Metadata = {
-  title: "Neptou — Discover Nepal",
-  description:
-    "Neptou is your guide to exploring Nepal — 400+ curated destinations, interactive maps, AI recommendations, and trip planning in 8 languages.",
-  openGraph: {
-    title: "Neptou — Discover Nepal",
-    description: "Your guide to exploring Nepal's most beautiful places.",
-    type: "website",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Neptou — Discover Nepal | Free iOS Travel Guide App",
+    template: "%s | Neptou",
   },
+  description: DESCRIPTION,
+  applicationName: "Neptou",
+  authors: [{ name: "Neptou" }],
+  creator: "Neptou",
+  publisher: "Neptou",
+  category: "travel",
+  keywords: [
+    "Nepal travel app",
+    "Nepal travel guide",
+    "discover Nepal",
+    "Kathmandu",
+    "Pokhara",
+    "Himalayas trekking",
+    "Nepal tourism",
+    "trip planner Nepal",
+    "Nepal map app",
+    "Nepal emergency numbers",
+    "Neptou",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Neptou",
+    title: "Neptou — Discover Nepal",
+    description: DESCRIPTION,
+    url: SITE_URL,
+    locale: "en_US",
+    images: [
+      { url: "/logo.png", width: 1024, height: 1024, alt: "Neptou — Discover Nepal" },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Neptou — Discover Nepal",
+    description: DESCRIPTION,
+    images: ["/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: { icon: "/favicon.ico", apple: "/logo.png" },
+  appleWebApp: { capable: true, title: "Neptou", statusBarStyle: "black-translucent" },
 };
 
 export default function RootLayout({

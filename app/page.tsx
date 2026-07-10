@@ -2,6 +2,11 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
     <div className="flex flex-col min-h-screen bg-gray-950 text-white font-[family-name:var(--font-geist-sans)]">
       {/* Nav */}
       <nav className="px-6 py-5 flex items-center justify-between max-w-7xl mx-auto w-full">
@@ -19,24 +24,29 @@ export default function HomePage() {
           <a href="/privacy" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
             Privacy Policy
           </a>
-          {/* App Store link — uncomment once live on App Store
           <a
-            href="https://apps.apple.com"
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener"
             className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
           >
             Download on iOS →
           </a>
-          */}
         </div>
       </nav>
 
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-24 max-w-4xl mx-auto w-full">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-red-950/60 border border-red-800/50 rounded-full px-4 py-1.5 text-sm text-red-300 mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-          Coming soon to the App Store
-        </div>
+        <a
+          href={APP_STORE_URL}
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/50 rounded-full px-4 py-1.5 text-sm text-emerald-300 mb-8 hover:border-emerald-600 transition-colors"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          Now available on the App Store
+        </a>
 
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
           Discover{" "}
@@ -53,18 +63,18 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          {/* App Store button — uncomment once live
           <a
-            href="https://apps.apple.com"
-            className="inline-flex items-center gap-3 bg-white text-gray-950 font-semibold px-7 py-3.5 rounded-2xl hover:bg-gray-100 transition-colors shadow-lg"
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center justify-center gap-3 bg-white text-gray-950 font-semibold px-7 py-3.5 rounded-2xl hover:bg-gray-100 transition-colors shadow-lg"
           >
             <AppleIcon />
             Download on the App Store
           </a>
-          */}
           <a
             href="#features"
-            className="inline-flex items-center gap-2 border border-gray-700 text-gray-300 px-7 py-3.5 rounded-2xl hover:border-gray-500 hover:text-white transition-colors"
+            className="inline-flex items-center justify-center gap-2 border border-gray-700 text-gray-300 px-7 py-3.5 rounded-2xl hover:border-gray-500 hover:text-white transition-colors"
           >
             Learn more ↓
           </a>
@@ -110,6 +120,37 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section id="faq" className="px-6 py-24 bg-gray-900/50">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Frequently asked questions
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Everything you might want to know about Neptou.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {faqs.map((f) => (
+              <details
+                key={f.q}
+                className="group bg-gray-900 border border-gray-800 rounded-2xl px-6 py-5 open:border-gray-700"
+              >
+                <summary className="flex items-center justify-between cursor-pointer list-none font-semibold text-white">
+                  {f.q}
+                  <span className="ml-4 text-gray-500 transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="text-gray-400 text-sm leading-relaxed mt-3">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="px-6 py-24 text-center">
         <div className="max-w-2xl mx-auto">
@@ -117,23 +158,25 @@ export default function HomePage() {
             Ready to explore Nepal?
           </h2>
           <p className="text-gray-400 mb-8">
-            Neptou is coming to the App Store soon — for free.
+            Neptou is available on the App Store — free.
           </p>
-          {/* CTA button — uncomment once live on App Store
-          <a
-            href="https://apps.apple.com"
-            className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white font-semibold px-8 py-4 rounded-2xl transition-colors shadow-lg shadow-red-900/30"
-          >
-            <AppleIcon />
-            Get it on iOS — Free
-          </a>
-          */}
-          <a
-            href="mailto:kathayatsubodh@gmail.com"
-            className="inline-flex items-center gap-2 border border-gray-700 text-gray-300 px-7 py-3.5 rounded-2xl hover:border-gray-500 hover:text-white transition-colors"
-          >
-            Get notified when it launches →
-          </a>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center justify-center gap-3 bg-red-600 hover:bg-red-500 text-white font-semibold px-8 py-4 rounded-2xl transition-colors shadow-lg shadow-red-900/30"
+            >
+              <AppleIcon />
+              Get it on iOS — Free
+            </a>
+            <a
+              href="mailto:kathayatsubodh@gmail.com"
+              className="inline-flex items-center justify-center gap-2 border border-gray-700 text-gray-300 px-7 py-3.5 rounded-2xl hover:border-gray-500 hover:text-white transition-colors"
+            >
+              Contact support →
+            </a>
+          </div>
         </div>
       </section>
 
@@ -161,8 +204,98 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
+
+const APP_STORE_URL = "https://apps.apple.com/app/neptou/id6756244066";
+const SITE_URL = "https://neptou.github.io";
+
+// Natural-language Q&A — rendered on the page AND emitted as FAQPage JSON-LD.
+// Phrased to match how people ask AI assistants ("free travel app for Nepal?").
+// Keep the visible text and the structured data identical (a Google requirement).
+const faqs = [
+  {
+    q: "What is Neptou?",
+    a: "Neptou is a free iOS travel companion app for Nepal. It helps you discover curated destinations, explore an interactive map, plan multi-day trips, get AI travel help, and reach Nepal's emergency services quickly.",
+  },
+  {
+    q: "Is Neptou free?",
+    a: "Yes. Neptou is free to download and use on the Apple App Store.",
+  },
+  {
+    q: "What platforms is Neptou available on?",
+    a: "Neptou is available on iOS for iPhone and iPad through the Apple App Store.",
+  },
+  {
+    q: "Does Neptou work offline?",
+    a: "Yes. Core places and maps are available on-device, so you can explore Nepal without an internet connection.",
+  },
+  {
+    q: "What language is Neptou in?",
+    a: "Neptou's interface is in English. Place names include their local Nepali forms, and the in-app AI assistant can understand and answer questions in many languages.",
+  },
+  {
+    q: "Does Neptou include Nepal emergency numbers?",
+    a: "Yes. Neptou offers one-tap dialing for Police (100), Fire Brigade (101), and Ambulance (102), plus a searchable emergency-contacts directory that sorts nearby help first.",
+  },
+  {
+    q: "Where can I download Neptou?",
+    a: "Neptou is on the Apple App Store at https://apps.apple.com/app/neptou/id6756244066.",
+  },
+];
+
+// JSON-LD structured data for rich results and AI answer engines
+// (app listing + site + organization + FAQ).
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "MobileApplication",
+      name: "Neptou",
+      operatingSystem: "iOS",
+      applicationCategory: "TravelApplication",
+      url: SITE_URL,
+      downloadUrl: APP_STORE_URL,
+      installUrl: APP_STORE_URL,
+      sameAs: [APP_STORE_URL],
+      description:
+        "Neptou is a free iOS travel companion for Nepal — discover curated destinations, explore an interactive map, plan trips, get AI travel help, and reach emergency services fast.",
+      featureList: [
+        "Curated Nepal destinations",
+        "Interactive map",
+        "Multi-day trip planner",
+        "AI travel assistant",
+        "Nepal emergency contacts (Police, Fire, Ambulance)",
+        "Offline access",
+      ],
+      inLanguage: "en",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      publisher: { "@type": "Organization", name: "Neptou" },
+    },
+    {
+      "@type": "WebSite",
+      name: "Neptou",
+      url: SITE_URL,
+    },
+    {
+      "@type": "Organization",
+      name: "Neptou",
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      email: "kathayatsubodh@gmail.com",
+      sameAs: [APP_STORE_URL],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
 
 const features = [
   {
@@ -190,10 +323,10 @@ const features = [
       "Get personalized place suggestions tailored to your travel style, interests, and past favorites.",
   },
   {
-    icon: "🌐",
-    title: "8 Languages",
+    icon: "🆘",
+    title: "Emergency Contacts",
     description:
-      "Available in English, Nepali, German, Chinese, Japanese, French, Spanish, and Hindi.",
+      "One-tap dialing for Police, Fire Brigade, and Ambulance, plus a searchable directory that puts nearby help first.",
   },
   {
     icon: "📱",
@@ -206,11 +339,10 @@ const features = [
 const stats = [
   { value: "20+", label: "Places" },
   { value: "77", label: "Districts" },
-  { value: "8", label: "Languages" },
+  { value: "iOS", label: "iPhone & iPad" },
   { value: "Free", label: "Always" },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function AppleIcon() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

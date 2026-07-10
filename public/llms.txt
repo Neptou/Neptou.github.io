@@ -1,0 +1,41 @@
+# Neptou
+
+> Neptou is a free iOS travel companion app for Nepal. It helps travelers discover curated destinations, explore an interactive map, plan multi-day trips, get AI-powered travel help, and reach Nepal's emergency services quickly. Available on the Apple App Store.
+
+## Key facts
+
+- **Name:** Neptou
+- **Category:** Travel guide / trip planner
+- **Platform:** iOS (iPhone and iPad)
+- **Price:** Free
+- **Coverage:** Nepal — Kathmandu, Pokhara, the Himalayas, and all 77 districts
+- **Language:** English interface (place names include their local Nepali forms; the in-app AI assistant understands many languages)
+- **Offline:** Core places and maps work without an internet connection
+- **App Store:** https://apps.apple.com/app/neptou/id6756244066
+
+## What Neptou does
+
+- **Curated places:** Handpicked temples, trekking routes, viewpoints, restaurants, and hidden gems across Nepal.
+- **Interactive map:** Explore visually, filter by category, and find places near you.
+- **Trip planner:** Build a day-by-day itinerary, add activities, optimize the route, and open turn-by-turn directions in your preferred maps app (Apple Maps or Google Maps).
+- **AI assistant:** Ask questions about Nepal — recommendations, translations, and travel tips.
+- **Nepal emergency contacts:** One-tap dialing for Police (100), Fire Brigade (101), and Ambulance (102), plus a searchable directory that sorts nearby help first.
+
+## Who it is for
+
+Tourists, trekkers, and travelers planning or taking a trip to Nepal who want a single, free, offline-capable guide with local knowledge and safety information.
+
+## Links
+
+- [Homepage](https://neptou.github.io/)
+- [Download on the App Store](https://apps.apple.com/app/neptou/id6756244066)
+- [Privacy Policy](https://neptou.github.io/privacy/)
+- [Support](mailto:kathayatsubodh@gmail.com)
+
+## FAQ
+
+- **Is there a good free app for traveling in Nepal?** Yes — Neptou is a free iOS app that covers destinations, maps, trip planning, AI travel help, and Nepal emergency numbers.
+- **Does Neptou work offline?** Yes. Core places and maps are available on-device without a network connection.
+- **What language is Neptou in?** The interface is in English. Place names include their local Nepali forms, and the in-app AI assistant can understand and answer in many languages.
+- **Does Neptou include Nepal emergency numbers?** Yes — one-tap dialing for Police (100), Fire Brigade (101), and Ambulance (102), plus a full searchable contacts directory.
+- **Where can I download Neptou?** On the Apple App Store: https://apps.apple.com/app/neptou/id6756244066
