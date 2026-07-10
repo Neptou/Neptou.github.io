@@ -14,6 +14,7 @@ interface Filters {
   district: string;
   municipality: string;
   is_hidden_gem: string; // "all" | "true" | "false"
+  active: string; // "all" | "true" | "false"
 }
 
 interface FilterOptions {
@@ -34,6 +35,7 @@ const emptyFilters: Filters = {
   district: "",
   municipality: "",
   is_hidden_gem: "all",
+  active: "all",
 };
 
 export default function DashboardPage() {
@@ -77,6 +79,7 @@ export default function DashboardPage() {
     if (filters.district)     params.set("district", filters.district);
     if (filters.municipality) params.set("municipality", filters.municipality);
     if (filters.is_hidden_gem !== "all") params.set("is_hidden_gem", filters.is_hidden_gem);
+    if (filters.active !== "all") params.set("active", filters.active);
 
     setLoading(true);
     setError("");
@@ -160,6 +163,18 @@ export default function DashboardPage() {
                 <option value="all">— All —</option>
                 <option value="true">Hidden gems only</option>
                 <option value="false">Regular only</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1">Active</label>
+              <select
+                value={filters.active}
+                onChange={(e) => update("active", e.target.value)}
+                className={selectCls}
+              >
+                <option value="all">— All —</option>
+                <option value="true">Active only</option>
+                <option value="false">Hidden only</option>
               </select>
             </div>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import PlaceModal from "./PlaceModal";
 import { authFetch, AuthError } from "@/lib/auth";
 
@@ -14,6 +14,7 @@ export interface Place {
   longitude: number | null;
   geohash: string | null;
   is_hidden_gem: boolean;
+  active: boolean;
   tips: string[] | null;
   rating: number | null;
   review_count: number | null;
@@ -28,9 +29,11 @@ export interface Place {
   state: string | null;
   district: string | null;
   municipality: string | null;
+  last_updated: string | null;
 }
 
 const ALL_COLUMNS = [
+  { key: "active",        label: "Active" },
   { key: "category",      label: "Category" },
   { key: "description",   label: "Description" },
   { key: "location",      label: "Location" },
@@ -42,11 +45,31 @@ const ALL_COLUMNS = [
   { key: "opening_hours", label: "Opening Hours" },
   { key: "entry_fee",     label: "Entry Fee" },
   { key: "photo_author",  label: "Photo / License" },
+  { key: "last_updated",  label: "Last Updated" },
 ] as const;
 
-type ColKey = typeof ALL_COLUMNS[number]["key"];
+// The column picker was removed — every editable column is always shown.
+// `show()` is kept (backed by this set) so re-introducing a toggle later is a
+// one-line change and the table JSX below stays declarative.
+const VISIBLE_COLUMNS = new Set<string>(ALL_COLUMNS.map((c) => c.key));
+const show = (key: string) => VISIBLE_COLUMNS.has(key);
 
-const DEFAULT_VISIBLE = new Set<ColKey>(["category", "description", "location", "coordinates"]);
+/** Compact absolute date + relative age (e.g. "3d ago") for the tooltip. */
+function formatUpdated(iso: string | null): { label: string; title: string } | null {
+  if (!iso) return null;
+  // The backend stores last_updated as a UTC wall-clock `timestamp` with no
+  // offset, so its ISO string ends without a `Z`/offset. Append `Z` so Date
+  // parses it as UTC — otherwise it's read as the viewer's local time and the
+  // age math skews by their UTC offset.
+  const norm = /([zZ]|[+-]\d{2}:?\d{2})$/.test(iso) ? iso : iso + "Z";
+  const d = new Date(norm);
+  if (isNaN(d.getTime())) return null;
+  const label = d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  const days = Math.floor((Date.now() - d.getTime()) / 86_400_000);
+  const rel =
+    days <= 0 ? "today" : days === 1 ? "yesterday" : days < 30 ? `${days}d ago` : `${Math.floor(days / 30)}mo ago`;
+  return { label: `${label} · ${rel}`, title: d.toLocaleString() };
+}
 
 interface Props {
   places: Place[];
@@ -59,31 +82,6 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
   >(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
-  const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(DEFAULT_VISIBLE);
-  const [colMenuOpen, setColMenuOpen] = useState(false);
-  const colMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (colMenuRef.current && !colMenuRef.current.contains(e.target as Node)) {
-        setColMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  function toggleCol(key: ColKey) {
-    setVisibleCols((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  }
-
-  function show(key: ColKey) {
-    return visibleCols.has(key);
-  }
 
   async function handleDelete(place: Place) {
     if (!confirm(`Delete "${place.name}"? This cannot be undone.`)) return;
@@ -113,62 +111,11 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
     return [place.district, place.state, place.country].filter(Boolean).join(", ") || "—";
   }
 
-  const colSpan = 2 + visibleCols.size;
+  const colSpan = 2 + ALL_COLUMNS.length;
 
   return (
     <div>
       <div className="flex items-center justify-end gap-3 mb-4">
-        {/* Column toggle */}
-        <div className="relative" ref={colMenuRef}>
-          <button
-            onClick={() => setColMenuOpen((v) => !v)}
-            className="flex items-center gap-1.5 text-sm text-gray-300 hover:text-white border border-gray-700 hover:border-gray-500 bg-gray-900 px-3 py-2 rounded-lg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 4.5v15m6-15v15M3 9h18M3 15h18" />
-            </svg>
-            Columns
-            <span className="ml-0.5 text-xs text-gray-500">({visibleCols.size}/{ALL_COLUMNS.length})</span>
-          </button>
-
-          {colMenuOpen && (
-            <div className="absolute right-0 mt-2 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-20 p-2">
-              <p className="text-xs text-gray-500 px-2 py-1 mb-1">Toggle columns</p>
-              {ALL_COLUMNS.map(({ key, label }) => (
-                <label
-                  key={key}
-                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-800 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={visibleCols.has(key)}
-                    onChange={() => toggleCol(key)}
-                    className="w-3.5 h-3.5 accent-red-500 cursor-pointer"
-                  />
-                  <span className="text-sm text-gray-300">{label}</span>
-                  {visibleCols.has(key) && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-red-500" />
-                  )}
-                </label>
-              ))}
-              <div className="border-t border-gray-800 mt-2 pt-2 flex gap-2 px-2">
-                <button
-                  onClick={() => setVisibleCols(new Set(ALL_COLUMNS.map((c) => c.key)))}
-                  className="text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setVisibleCols(DEFAULT_VISIBLE)}
-                  className="text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                  Reset
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
         <button
           onClick={() => setModalState({ mode: "add" })}
           className="bg-red-600 hover:bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -184,6 +131,7 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
           <thead className="bg-gray-900 text-gray-400 uppercase text-xs tracking-wider">
             <tr>
               <th className="px-4 py-3 text-left whitespace-nowrap">Name</th>
+              {show("active")        && <th className="px-4 py-3 text-left whitespace-nowrap">Active</th>}
               {show("category")      && <th className="px-4 py-3 text-left whitespace-nowrap">Category</th>}
               {show("description")   && <th className="px-4 py-3 text-left">Description</th>}
               {show("location")      && <th className="px-4 py-3 text-left whitespace-nowrap">Location</th>}
@@ -195,6 +143,7 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
               {show("opening_hours") && <th className="px-4 py-3 text-left whitespace-nowrap">Hours</th>}
               {show("entry_fee")     && <th className="px-4 py-3 text-left whitespace-nowrap">Entry Fee</th>}
               {show("photo_author")  && <th className="px-4 py-3 text-left whitespace-nowrap">Photo / License</th>}
+              {show("last_updated")  && <th className="px-4 py-3 text-left whitespace-nowrap">Last Updated</th>}
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -214,6 +163,14 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
                     <span className="block text-xs text-gray-500 font-normal">{place.name_nepali}</span>
                   )}
                 </td>
+
+                {show("active") && (
+                  <td className="px-4 py-3 text-xs whitespace-nowrap">
+                    {place.active === false
+                      ? <span className="px-2 py-0.5 rounded-full bg-gray-800 text-gray-400">Hidden</span>
+                      : <span className="px-2 py-0.5 rounded-full bg-emerald-900/50 text-emerald-400">Active</span>}
+                  </td>
+                )}
 
                 {show("category") && (
                   <td className="px-4 py-3">
@@ -304,6 +261,17 @@ export default function PlacesTable({ places, onPlacesChange }: Props) {
                     {place.image_author
                       ? <span className="text-gray-300">{place.image_author}<br /><span className="text-gray-500">{place.image_license ?? ""}</span></span>
                       : <span className="text-gray-600">—</span>}
+                  </td>
+                )}
+
+                {show("last_updated") && (
+                  <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
+                    {(() => {
+                      const u = formatUpdated(place.last_updated);
+                      return u
+                        ? <span title={u.title}>{u.label}</span>
+                        : <span className="text-gray-600">—</span>;
+                    })()}
                   </td>
                 )}
 

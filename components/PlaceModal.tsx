@@ -29,6 +29,8 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
     longitude: place?.longitude?.toString() ?? "",
     geohash: place?.geohash ?? "",
     is_hidden_gem: place?.is_hidden_gem ?? false,
+    // New places default to active; only an explicit false hides them from iOS.
+    active: place?.active ?? true,
     tips: (place?.tips ?? []).join("\n"),
     rating: place?.rating?.toString() ?? "",
     review_count: place?.review_count?.toString() ?? "",
@@ -75,6 +77,7 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
       longitude: form.longitude ? parseFloat(form.longitude) : null,
       geohash: form.geohash || null,
       is_hidden_gem: form.is_hidden_gem,
+      active: form.active,
       // One tip per line; trim and drop blanks. Sent as an array so the backend
       // (COALESCE(tips)) persists edits instead of leaving tips untouched.
       tips: form.tips
@@ -334,17 +337,32 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
             />
           </Field>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="is_hidden_gem"
-              checked={form.is_hidden_gem}
-              onChange={(e) => setForm((prev) => ({ ...prev, is_hidden_gem: e.target.checked }))}
-              className="w-4 h-4 accent-red-500"
-            />
-            <label htmlFor="is_hidden_gem" className="text-sm font-medium text-gray-300">
-              Hidden Gem
-            </label>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_hidden_gem"
+                checked={form.is_hidden_gem}
+                onChange={(e) => setForm((prev) => ({ ...prev, is_hidden_gem: e.target.checked }))}
+                className="w-4 h-4 accent-red-500"
+              />
+              <label htmlFor="is_hidden_gem" className="text-sm font-medium text-gray-300">
+                Hidden Gem
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="active"
+                checked={form.active}
+                onChange={(e) => setForm((prev) => ({ ...prev, active: e.target.checked }))}
+                className="w-4 h-4 accent-emerald-500"
+              />
+              <label htmlFor="active" className="text-sm font-medium text-gray-300">
+                Active <span className="text-gray-500 font-normal">(shown in app)</span>
+              </label>
+            </div>
           </div>
 
           {error && (
