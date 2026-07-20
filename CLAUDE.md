@@ -31,21 +31,29 @@ app/
     setup/page.tsx    ← first-time admin account creation
     dashboard/page.tsx← places search + filter table (main admin UI)
     foods/page.tsx    ← foods CRUD list + search
+    festivals/page.tsx← festivals & jatras CRUD list + search
+    team/page.tsx     ← admin team management (super-admin only): roles + per-resource permissions
     emergency-contacts/page.tsx ← emergency contacts CRUD list + search
 components/
   BackendPing.tsx     ← fires GET /health on mount to warm Render cold start
-  AdminHeader.tsx     ← top nav for admin pages (tabs: Places / Foods / Emergency Contacts)
+  AdminHeader.tsx     ← top nav (tabs filtered by permission via GET /admin/me; Team tab is super-admin only; shows current user + Change password)
   LoginForm.tsx       ← login form component
   SetupForm.tsx       ← setup form component
   PlacesTable.tsx     ← places table with inline Edit / Delete actions
   PlaceModal.tsx      ← add/edit place modal (fetches /admin/divisions for dropdown)
   FoodsTable.tsx      ← foods table with inline Edit / Delete actions
   FoodModal.tsx       ← add/edit food modal
+  FestivalsTable.tsx  ← festivals & jatras table with inline Edit / Delete actions
+  FestivalModal.tsx   ← add/edit festival modal (division dropdown, date pickers, Nepali date/month)
+  AdminsTable.tsx     ← team table (super-admin): Edit / Reset password / Delete
+  AdminModal.tsx      ← add/edit admin (role select + per-resource permission checkboxes)
+  ResetPasswordModal.tsx ← super-admin resets another admin's password
+  ChangePasswordModal.tsx ← self-service password change (from AdminHeader)
   EmergencyContactsTable.tsx ← emergency contacts table
   EmergencyContactModal.tsx  ← add/edit emergency contact modal
 lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
-  auth.ts             ← token helpers (getToken / setToken / clearToken) + authFetch (Bearer header, 401 → login redirect)
+  auth.ts             ← token helpers + authFetch (Bearer header, 401 → login redirect); getMe() (cached /admin/me), canAccess/isSuperAdmin RBAC helpers, RESOURCES list
 ```
 
 ## Dev & Build
@@ -85,6 +93,8 @@ The public site is live-marketing for the App Store app (<https://apps.apple.com
 - **Structured data** (`app/page.tsx`): inline JSON-LD `@graph` with `MobileApplication` (free iOS app, `downloadUrl` → App Store), `WebSite`, and `Organization`.
 - **`sitemap.ts` / `robots.ts`**: both need `export const dynamic = "force-static"` — without it `next build` fails under `output: "export"`. They emit `/sitemap.xml` and `/robots.txt`. Add new public routes to `sitemap.ts` (admin stays out via robots `disallow`).
 - **Homepage CTAs** are live App Store links (`APP_STORE_URL` in `page.tsx`) — the old "coming soon" placeholders were removed. If the app is ever pulled, revert those to the notify/email flow.
+
+**Post-deploy setup:** `SEO-CHECKLIST.md` (repo root) — one-time Search Console / Bing / structured-data steps to run after a deploy.
 
 ### AEO (AI answer-engine optimization)
 
