@@ -43,8 +43,9 @@ components/
   PlaceModal.tsx      ← add/edit place modal (fetches /admin/divisions for dropdown)
   FoodsTable.tsx      ← foods table with inline Edit / Delete actions
   FoodModal.tsx       ← add/edit food modal
-  FestivalsTable.tsx  ← festivals & jatras table with inline Edit / Delete actions
-  FestivalModal.tsx   ← add/edit festival modal (division dropdown, date pickers, Nepali date/month)
+  FestivalsTable.tsx  ← festivals & jatras table with inline Edit / Delete actions (Location column resolves district from division_id)
+  FestivalModal.tsx   ← add/edit festival modal (searchable district picker, date pickers, Nepali date/month)
+  DivisionSelect.tsx  ← reusable searchable district picker (combobox over place_divisions; stores division_id)
   AdminsTable.tsx     ← team table (super-admin): Edit / Reset password / Delete
   AdminModal.tsx      ← add/edit admin (role select + per-resource permission checkboxes)
   ResetPasswordModal.tsx ← super-admin resets another admin's password
@@ -53,6 +54,7 @@ components/
   EmergencyContactModal.tsx  ← add/edit emergency contact modal
 lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
+  divisions.ts        ← Division type, cached getDivisions(), divisionLabel() (shared by DivisionSelect + festivals table)
   auth.ts             ← token helpers + authFetch (Bearer header, 401 → login redirect); getMe() (cached /admin/me), canAccess/isSuperAdmin RBAC helpers, RESOURCES list
 ```
 

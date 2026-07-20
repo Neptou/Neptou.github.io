@@ -32,6 +32,8 @@ export interface Festival {
 interface Props {
   festivals: Festival[];
   onFestivalsChange: (updater: (prev: Festival[]) => Festival[]) => void;
+  /** Resolves a division_id to a district label; falls back to free-text region when absent. */
+  divisionLabelById?: (id: string) => string | null;
 }
 
 function dateRange(f: Festival): string {
@@ -40,7 +42,16 @@ function dateRange(f: Festival): string {
   return f.start_date ?? "—";
 }
 
-export default function FestivalsTable({ festivals, onFestivalsChange }: Props) {
+export default function FestivalsTable({
+  festivals,
+  onFestivalsChange,
+  divisionLabelById,
+}: Props) {
+  function locationLabel(f: Festival): string | null {
+    const district = f.division_id ? divisionLabelById?.(f.division_id) : null;
+    return district ?? f.region;
+  }
+
   const [modalState, setModalState] = useState<
     { mode: "add" } | { mode: "edit"; festival: Festival } | null
   >(null);
@@ -95,7 +106,7 @@ export default function FestivalsTable({ festivals, onFestivalsChange }: Props) 
               <th className="px-4 py-3 text-left whitespace-nowrap">Category</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Dates</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Nepali date</th>
-              <th className="px-4 py-3 text-left whitespace-nowrap">Region</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">Location</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Active</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Image</th>
               <th className="px-4 py-3 text-right">Actions</th>
@@ -140,7 +151,9 @@ export default function FestivalsTable({ festivals, onFestivalsChange }: Props) 
                   )}
                 </td>
                 <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
-                  {festival.region ?? <span className="text-gray-600">—</span>}
+                  {locationLabel(festival) ?? (
+                    <span className="text-gray-600">—</span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-xs whitespace-nowrap">
                   {festival.is_active ? (

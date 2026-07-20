@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { authFetch, AuthError } from "@/lib/auth";
+import { getDivisions, divisionLabel, type Division } from "@/lib/divisions";
 import AdminHeader from "@/components/AdminHeader";
+import DivisionSelect from "@/components/DivisionSelect";
 import FestivalsTable from "@/components/FestivalsTable";
 import type { Festival } from "@/components/FestivalsTable";
 
@@ -32,7 +34,7 @@ const NEPALI_MONTHS = [
 interface Filters {
   name: string;
   category: string;
-  region: string;
+  division_id: string;
   nepali_month: string;
   is_active: string; // "all" | "true" | "false"
 }
@@ -40,7 +42,7 @@ interface Filters {
 const emptyFilters: Filters = {
   name: "",
   category: "",
-  region: "",
+  division_id: "",
   nepali_month: "",
   is_active: "all",
 };
@@ -48,8 +50,21 @@ const emptyFilters: Filters = {
 export default function FestivalsPage() {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [festivals, setFestivals] = useState<Festival[] | null>(null);
+  const [divisions, setDivisions] = useState<Division[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    getDivisions()
+      .then(setDivisions)
+      .catch(() => {});
+  }, []);
+
+  // Resolve a festival's division_id to a readable district label for the table.
+  const divisionLabelById = useMemo(() => {
+    const byId = new Map(divisions.map((d) => [d.id, divisionLabel(d)]));
+    return (id: string) => byId.get(id) ?? null;
+  }, [divisions]);
 
   function update(field: keyof Filters, value: string) {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -61,7 +76,7 @@ export default function FestivalsPage() {
     const params = new URLSearchParams();
     if (filters.name) params.set("name", filters.name);
     if (filters.category) params.set("category", filters.category);
-    if (filters.region) params.set("region", filters.region);
+    if (filters.division_id) params.set("division_id", filters.division_id);
     if (filters.nepali_month) params.set("nepali_month", filters.nepali_month);
     if (filters.is_active !== "all") params.set("is_active", filters.is_active);
 
@@ -127,12 +142,17 @@ export default function FestivalsPage() {
               </select>
             </div>
 
-            <FilterInput
-              label="Region"
-              value={filters.region}
-              onChange={(v) => update("region", v)}
-              placeholder="Bhaktapur…"
-            />
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1">
+                District
+              </label>
+              <DivisionSelect
+                value={filters.division_id}
+                onChange={(id) => update("division_id", id)}
+                allowClear
+                placeholder="Search district…"
+              />
+            </div>
 
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1">
@@ -203,6 +223,7 @@ export default function FestivalsPage() {
             </p>
             <FestivalsTable
               festivals={festivals}
+              divisionLabelById={divisionLabelById}
               onFestivalsChange={(updater) =>
                 setFestivals((prev) => updater(prev ?? []))
               }

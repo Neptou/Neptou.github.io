@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Festival } from "./FestivalsTable";
 import { authFetch, AuthError } from "@/lib/auth";
-
-interface Division {
-  id: string;
-  country: string | null;
-  state: string | null;
-  district: string | null;
-  municipality: string | null;
-}
+import DivisionSelect from "./DivisionSelect";
 
 interface Props {
   mode: "add" | "edit";
@@ -71,25 +64,11 @@ export default function FestivalModal({
     // New festivals default to active; only an explicit false hides them from the app.
     is_active: festival?.is_active ?? true,
   });
-  const [divisions, setDivisions] = useState<Division[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    authFetch(`/admin/divisions`)
-      .then((r) => r.json())
-      .then(setDivisions)
-      .catch(() => {});
-  }, []);
-
   function update(field: keyof typeof form, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
-  }
-
-  function divisionLabel(d: Division) {
-    return [d.municipality, d.district, d.state, d.country]
-      .filter(Boolean)
-      .join(" › ");
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -280,18 +259,12 @@ export default function FestivalModal({
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="District (division)">
-              <select
+              <DivisionSelect
                 value={form.division_id}
-                onChange={(e) => update("division_id", e.target.value)}
-                className={inputCls}
-              >
-                <option value="">— None / Nationwide —</option>
-                {divisions.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {divisionLabel(d)}
-                  </option>
-                ))}
-              </select>
+                onChange={(id) => update("division_id", id)}
+                allowClear
+                placeholder="Search district…"
+              />
             </Field>
             <Field label="Region (free text)">
               <input
