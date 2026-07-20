@@ -15,7 +15,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Next.js 16** (Turbopack, App Router) — static export (`output: "export"`)
 - **TypeScript**, **Tailwind CSS**
 - **Deployed**: GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
-- **Node.js**: 24+ (workflow targets Node 24; local machine runs Node 26)
+- **Node.js**: 26 (workflow and local machine both on Node 26)
+- **Package manager**: pnpm (see Dev & Build)
 
 ## Project Structure
 
@@ -60,11 +61,15 @@ lib/
 
 ## Dev & Build
 
+This project uses **pnpm** (shared content-addressable store → far less disk than npm's per-project `node_modules`). The pinned version lives in `package.json` `packageManager`.
+
 ```bash
-npm install
-npm run dev        # http://localhost:3000 (Turbopack)
-npm run build      # static export → out/   (also runs TypeScript check)
+pnpm install
+pnpm dev           # http://localhost:3000 (Turbopack)
+pnpm build         # static export → out/   (also runs TypeScript check)
 ```
+
+> pnpm blocks dependency build scripts by default. The native ones this project needs (`sharp`, `unrs-resolver`) are allow-listed in `pnpm-workspace.yaml` (`allowBuilds:`) — pnpm 11 reads project settings there, not from a `pnpm` field in `package.json`.
 
 Set `NEXT_PUBLIC_BACKEND_URL` in `.env.local` to point at the local or remote backend:
 ```

@@ -1,0 +1,6 @@
+# pnpm 11 reads project-level settings from here (no longer from the "pnpm"
+# field in package.json). Allow the native post-install build scripts that npm
+# used to run automatically — pnpm blocks build scripts by default for safety.
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
