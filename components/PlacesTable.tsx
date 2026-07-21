@@ -30,6 +30,9 @@ export interface Place {
   district: string | null;
   municipality: string | null;
   last_updated: string | null;
+  coordinates_verified?: boolean;
+  coordinates_verified_at?: string | null;
+  coordinates_verified_by?: string | null;
 }
 
 const ALL_COLUMNS = [

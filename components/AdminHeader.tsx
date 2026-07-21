@@ -16,6 +16,7 @@ import ChangePasswordModal from "@/components/ChangePasswordModal";
 
 const NAV_TABS = [
   { href: "/admin/dashboard", label: "Places", resource: "places" },
+  { href: "/admin/maps", label: "Maps", resource: "places" },
   { href: "/admin/foods", label: "Foods", resource: "foods" },
   { href: "/admin/festivals", label: "Festivals", resource: "festivals" },
   {

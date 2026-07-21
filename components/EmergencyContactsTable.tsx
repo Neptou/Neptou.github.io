@@ -3,6 +3,7 @@
 import { useState } from "react";
 import EmergencyContactModal from "./EmergencyContactModal";
 import { authFetch, AuthError } from "@/lib/auth";
+import { formatVerified, verifyRecord } from "@/lib/verify";
 
 export interface EmergencyContact {
   id: number;
@@ -16,6 +17,10 @@ export interface EmergencyContact {
   additional_info: string | null;
   last_verified: string | null;
   source_note: string | null;
+  // Admin verify workflow (distinct from the domain `last_verified` date above).
+  verified?: boolean;
+  verified_at?: string | null;
+  verified_by?: string | null;
 }
 
 interface Props {
@@ -28,7 +33,21 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
     { mode: "add" } | { mode: "edit"; contact: EmergencyContact } | null
   >(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [verifying, setVerifying] = useState<number | null>(null);
   const [actionError, setActionError] = useState("");
+
+  async function handleVerify(contact: EmergencyContact, verified: boolean) {
+    setVerifying(contact.id);
+    setActionError("");
+    try {
+      const v = await verifyRecord("/admin/emergency-contacts", contact.id, verified);
+      onContactsChange((prev) => prev.map((c) => (c.id === contact.id ? { ...c, ...v } : c)));
+    } catch (e) {
+      if (!(e instanceof AuthError)) setActionError(`Failed to update "${contact.name}".`);
+    } finally {
+      setVerifying(null);
+    }
+  }
 
   async function handleDelete(contact: EmergencyContact) {
     if (!confirm(`Delete "${contact.name}"? This cannot be undone.`)) return;
@@ -78,6 +97,7 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
               <th className="px-4 py-3 text-left">Description</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">24/7</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Languages</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">Last verified</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Verified</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -85,7 +105,7 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
           <tbody className="divide-y divide-gray-800">
             {contacts.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
                   No emergency contacts found.
                 </td>
               </tr>
@@ -128,8 +148,30 @@ export default function EmergencyContactsTable({ contacts, onContactsChange }: P
                 <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
                   {c.last_verified ?? <span className="text-gray-600">—</span>}
                 </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {c.verified ? (
+                    <span className="text-xs text-emerald-400">
+                      ✓ Verified
+                      {formatVerified(c.verified_at) && (
+                        <span className="block text-gray-500">
+                          {formatVerified(c.verified_at)}
+                          {c.verified_by ? ` · ${c.verified_by}` : ""}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-500">○ Needs review</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => handleVerify(c, !c.verified)}
+                      disabled={verifying === c.id}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-40 transition-colors px-2 py-1"
+                    >
+                      {verifying === c.id ? "…" : c.verified ? "Un-verify" : "Mark verified"}
+                    </button>
                     <button
                       onClick={() => setModalState({ mode: "edit", contact: c })}
                       className="text-xs text-blue-400 hover:text-blue-300 transition-colors px-2 py-1"

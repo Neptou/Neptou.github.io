@@ -71,8 +71,12 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: { icon: "/favicon.ico", apple: "/logo.png" },
   appleWebApp: { capable: true, title: "Neptou", statusBarStyle: "black-translucent" },
+  // Apple Smart App Banner — Next.js emits <meta name="apple-itunes-app"
+  // content="app-id=6756244066">. This is the app's real App Store numeric id
+  // (https://apps.apple.com/app/neptou/id6756244066). Smart Banner only; no
+  // custom banner UI.
+  itunes: { appId: "6756244066" },
 };
 
 export default function RootLayout({

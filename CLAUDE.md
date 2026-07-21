@@ -57,7 +57,12 @@ lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
   divisions.ts        ← Division type, cached getDivisions(), divisionLabel() (shared by DivisionSelect + festivals table)
   auth.ts             ← token helpers + authFetch (Bearer header, 401 → login redirect); getMe() (cached /admin/me), canAccess/isSuperAdmin RBAC helpers, RESOURCES list
+  verify.ts           ← shared admin verify helpers: formatVerified() (ISO → human date) + verifyRecord(basePath, id, verified) POSTing /admin/<res>/{id}/verify (sets Content-Type). Used by the Foods/Festivals/Emergency-Contacts tables
 ```
+
+## Verify workflow (admin record review)
+
+Every content tab lets staff mark a record reviewed. The **Foods / Festivals / Emergency Contacts** tables show a "Verified" column (✓ Verified + date/who, or ○ Needs review) and a **Mark verified / Un-verify** row action calling `verifyRecord()` (`lib/verify.ts`) → `POST /admin/<res>/{id}/verify`, then patch the row's `verified`/`verified_at`/`verified_by` via the table's `onXChange` updater. The **Places** equivalent is coordinate-specific and lives on the **Maps** tab (`/admin/maps`, `verify-coordinates` + `coordinates_verified*`). Emergency contacts also keep a separate domain **"Last verified"** date column (`last_verified`) — distinct from the admin `verified` review flag. Missing `verified` is treated as `false`, so the UI degrades gracefully before the backend columns deploy.
 
 ## Dev & Build
 

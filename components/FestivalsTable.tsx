@@ -3,6 +3,7 @@
 import { useState } from "react";
 import FestivalModal from "./FestivalModal";
 import { authFetch, AuthError } from "@/lib/auth";
+import { formatVerified, verifyRecord } from "@/lib/verify";
 
 export interface Festival {
   id: string;
@@ -27,6 +28,9 @@ export interface Festival {
   image_source_url: string | null;
   is_active: boolean;
   last_updated?: string | null;
+  verified?: boolean;
+  verified_at?: string | null;
+  verified_by?: string | null;
 }
 
 interface Props {
@@ -56,7 +60,24 @@ export default function FestivalsTable({
     { mode: "add" } | { mode: "edit"; festival: Festival } | null
   >(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
+
+  async function handleVerify(festival: Festival, verified: boolean) {
+    setVerifying(festival.id);
+    setActionError("");
+    try {
+      const v = await verifyRecord("/admin/festivals", festival.id, verified);
+      onFestivalsChange((prev) =>
+        prev.map((f) => (f.id === festival.id ? { ...f, ...v } : f))
+      );
+    } catch (e) {
+      if (!(e instanceof AuthError))
+        setActionError(`Failed to update "${festival.name}".`);
+    } finally {
+      setVerifying(null);
+    }
+  }
 
   async function handleDelete(festival: Festival) {
     if (!confirm(`Delete "${festival.name}"? This cannot be undone.`)) return;
@@ -109,13 +130,14 @@ export default function FestivalsTable({
               <th className="px-4 py-3 text-left whitespace-nowrap">Location</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Active</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Image</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">Verified</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
             {festivals.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                   No festivals found.
                 </td>
               </tr>
@@ -180,8 +202,30 @@ export default function FestivalsTable({
                     <span className="text-gray-600 text-xs">—</span>
                   )}
                 </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {festival.verified ? (
+                    <span className="text-xs text-emerald-400">
+                      ✓ Verified
+                      {formatVerified(festival.verified_at) && (
+                        <span className="block text-gray-500">
+                          {formatVerified(festival.verified_at)}
+                          {festival.verified_by ? ` · ${festival.verified_by}` : ""}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-500">○ Needs review</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => handleVerify(festival, !festival.verified)}
+                      disabled={verifying === festival.id}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-40 transition-colors px-2 py-1"
+                    >
+                      {verifying === festival.id ? "…" : festival.verified ? "Un-verify" : "Mark verified"}
+                    </button>
                     <button
                       onClick={() => setModalState({ mode: "edit", festival })}
                       className="text-xs text-blue-400 hover:text-blue-300 transition-colors px-2 py-1"
