@@ -7,6 +7,8 @@ export const RESOURCES: { key: string; label: string }[] = [
   { key: "places", label: "Places" },
   { key: "foods", label: "Foods" },
   { key: "festivals", label: "Festivals" },
+  { key: "hotels", label: "Hotels" },
+  { key: "guides", label: "Guides" },
   { key: "divisions", label: "Divisions" },
   { key: "emergency_contacts", label: "Emergency Contacts" },
 ];

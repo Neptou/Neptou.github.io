@@ -119,6 +119,7 @@ export default function MapsPage() {
   const [mapMode, setMapMode] = useState<MapMode>("compare");
   const [editing, setEditing] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   // "Set coordinates from Google Maps": pasted link/coords → prefill the edit form.
   const [pasteInput, setPasteInput] = useState("");
   const [pasteError, setPasteError] = useState("");
@@ -254,6 +255,31 @@ export default function MapsPage() {
       setError("Failed to update verification.");
     } finally {
       setVerifying(false);
+    }
+  }
+
+  /** Delete the selected place (for clearing duplicates), then advance to the
+      next one in the current order so the verify loop keeps moving. */
+  async function handleDelete() {
+    if (!selected) return;
+    if (!confirm(`Delete "${selected.name}"? This permanently removes the place from the database.`)) return;
+    const deletedId = selected.id;
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await authFetch(`/admin/places/${deletedId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      // Pick the row that slides into the deleted one's slot (else the last one).
+      const idx = orderedPlaces.findIndex((p) => p.id === deletedId);
+      const remaining = orderedPlaces.filter((p) => p.id !== deletedId);
+      const next = remaining[idx] ?? remaining[remaining.length - 1] ?? null;
+      setPlaces((prev) => (prev ? prev.filter((p) => p.id !== deletedId) : prev));
+      setSelectedId(next ? next.id : null);
+    } catch (e) {
+      if (e instanceof AuthError) return;
+      setError(`Failed to delete "${selected.name}".`);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -489,6 +515,13 @@ export default function MapsPage() {
                           className="text-sm bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
                         >
                           Edit coordinates
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={deleting}
+                          className="text-sm bg-red-900/40 hover:bg-red-800/60 disabled:opacity-50 text-red-300 border border-red-900/60 px-4 py-2 rounded-lg transition-colors"
+                        >
+                          {deleting ? "Deleting…" : "Delete"}
                         </button>
                         {selected.coordinates_verified ? (
                           <button

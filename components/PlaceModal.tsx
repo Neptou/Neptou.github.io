@@ -123,8 +123,8 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-8">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="px-6 py-5 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-gray-900">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-3xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="px-6 py-5 border-b border-gray-800 flex items-center justify-between bg-gray-900">
           <h2 className="text-lg font-semibold text-white">
             {mode === "add" ? "Add place" : "Edit place"}
           </h2>
@@ -136,7 +136,8 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
           <div className="grid grid-cols-2 gap-3">
             <Field label="Name" required>
               <input
@@ -365,27 +366,30 @@ export default function PlaceModal({ mode, place, onSaved, onClose }: Props) {
             </div>
           </div>
 
-          {error && (
-            <p className="text-red-400 text-sm bg-red-950/50 border border-red-800 rounded-lg px-3 py-2">
-              {error}
-            </p>
-          )}
+          </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg transition-colors"
-            >
-              {loading ? "Saving…" : mode === "add" ? "Add place" : "Save changes"}
-            </button>
+          <div className="border-t border-gray-800 bg-gray-900 px-6 py-4 space-y-3">
+            {error && (
+              <p className="text-red-400 text-sm bg-red-950/50 border border-red-800 rounded-lg px-3 py-2">
+                {error}
+              </p>
+            )}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg transition-colors"
+              >
+                {loading ? "Saving…" : mode === "add" ? "Add place" : "Save changes"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

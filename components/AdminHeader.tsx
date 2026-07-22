@@ -19,6 +19,8 @@ const NAV_TABS = [
   { href: "/admin/maps", label: "Maps", resource: "places" },
   { href: "/admin/foods", label: "Foods", resource: "foods" },
   { href: "/admin/festivals", label: "Festivals", resource: "festivals" },
+  { href: "/admin/hotels", label: "Hotels", resource: "hotels" },
+  { href: "/admin/guides", label: "Guides", resource: "guides" },
   {
     href: "/admin/emergency-contacts",
     label: "Emergency Contacts",

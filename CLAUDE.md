@@ -35,6 +35,8 @@ app/
     festivals/page.tsx← festivals & jatras CRUD list + search
     team/page.tsx     ← admin team management (super-admin only): roles + per-resource permissions
     emergency-contacts/page.tsx ← emergency contacts CRUD list + search
+    hotels/page.tsx   ← hotels CRUD list + search (admin-only; no iOS yet)
+    guides/page.tsx   ← tour guides CRUD list + search (admin-only; no iOS yet)
 components/
   BackendPing.tsx     ← fires GET /health on mount to warm Render cold start
   AdminHeader.tsx     ← top nav (tabs filtered by permission via GET /admin/me; Team tab is super-admin only; shows current user + Change password)
@@ -53,6 +55,9 @@ components/
   ChangePasswordModal.tsx ← self-service password change (from AdminHeader)
   EmergencyContactsTable.tsx ← emergency contacts table
   EmergencyContactModal.tsx  ← add/edit emergency contact modal
+  HotelsTable.tsx / HotelModal.tsx ← hotels table + add/edit modal (DivisionSelect for division, amenities list, star rating)
+  GuidesTable.tsx / GuideModal.tsx ← guides table + add/edit modal (specialties checkboxes, languages, Places-covered via PlaceMultiSelect)
+  PlaceMultiSelect.tsx ← searchable multi-add place picker (guide↔places); searches /admin/places?name=, stores place_ids, shows {id,name} chips
 lib/
   config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
   divisions.ts        ← Division type, cached getDivisions(), divisionLabel() (shared by DivisionSelect + festivals table)
