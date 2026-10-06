@@ -1,8 +1,8 @@
 @../CLAUDE.md
 
-# NeptouWeb — CLAUDE.md
+# NeptouWeb
 
-This file provides guidance specific to the Next.js web project. (`AGENTS.md` is a symlink to this file.)
+Public marketing site and staff admin panel for Neptou. Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS 4, React 19. Built as a static export and served from GitHub Pages at https://neptou.github.io. Cross-project context (backend, iOS, API versioning) is in the root `../CLAUDE.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 ## This is NOT the Next.js you know
@@ -10,120 +10,78 @@ This file provides guidance specific to the Next.js web project. (`AGENTS.md` is
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-## Stack
-
-- **Next.js 16** (Turbopack, App Router) — static export (`output: "export"`)
-- **TypeScript**, **Tailwind CSS**
-- **Deployed**: GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
-- **Node.js**: 26 (workflow and local machine both on Node 26)
-- **Package manager**: pnpm (see Dev & Build)
-
-## Project Structure
-
-```
-app/
-  layout.tsx          ← root layout; full SEO metadata + BackendPing for Render warmup
-  page.tsx            ← public homepage (hero, features, stats, CTA) + JSON-LD structured data
-  sitemap.ts          ← static sitemap.xml (home + /privacy); `dynamic = "force-static"`
-  robots.ts           ← static robots.txt (allow /, disallow /admin/, sitemap ref)
-  admin/
-    page.tsx          ← redirects to /admin/login or /admin/dashboard
-    login/page.tsx    ← admin login form
-    setup/page.tsx    ← first-time admin account creation
-    dashboard/page.tsx← places search + filter table (main admin UI)
-    foods/page.tsx    ← foods CRUD list + search
-    festivals/page.tsx← festivals & jatras CRUD list + search
-    team/page.tsx     ← admin team management (super-admin only): roles + per-resource permissions
-    emergency-contacts/page.tsx ← emergency contacts CRUD list + search
-    hotels/page.tsx   ← hotels CRUD list + search (admin-only; no iOS yet)
-    guides/page.tsx   ← tour guides CRUD list + search (admin-only; no iOS yet)
-components/
-  BackendPing.tsx     ← fires GET /health on mount to warm Render cold start
-  AdminHeader.tsx     ← top nav (tabs filtered by permission via GET /admin/me; Team tab is super-admin only; shows current user + Change password)
-  LoginForm.tsx       ← login form component
-  SetupForm.tsx       ← setup form component
-  PlacesTable.tsx     ← places table with inline Edit / Delete actions
-  PlaceModal.tsx      ← add/edit place modal (fetches /admin/divisions for dropdown)
-  FoodsTable.tsx      ← foods table with inline Edit / Delete actions
-  FoodModal.tsx       ← add/edit food modal
-  FestivalsTable.tsx  ← festivals & jatras table with inline Edit / Delete actions (Location column resolves district from division_id)
-  FestivalModal.tsx   ← add/edit festival modal (searchable district picker, date pickers, Nepali date/month)
-  DivisionSelect.tsx  ← reusable searchable district picker (combobox over place_divisions; stores division_id)
-  AdminsTable.tsx     ← team table (super-admin): Edit / Reset password / Delete
-  AdminModal.tsx      ← add/edit admin (role select + per-resource permission checkboxes)
-  ResetPasswordModal.tsx ← super-admin resets another admin's password
-  ChangePasswordModal.tsx ← self-service password change (from AdminHeader)
-  EmergencyContactsTable.tsx ← emergency contacts table
-  EmergencyContactModal.tsx  ← add/edit emergency contact modal
-  HotelsTable.tsx / HotelModal.tsx ← hotels table + add/edit modal (DivisionSelect for division, amenities list, star rating)
-  GuidesTable.tsx / GuideModal.tsx ← guides table + add/edit modal (specialties checkboxes, languages, Places-covered via PlaceMultiSelect)
-  PlaceMultiSelect.tsx ← searchable multi-add place picker (guide↔places); searches /admin/places?name=, stores place_ids, shows {id,name} chips
-lib/
-  config.ts           ← exports BACKEND_URL (NEXT_PUBLIC_BACKEND_URL or localhost:8000)
-  divisions.ts        ← Division type, cached getDivisions(), divisionLabel() (shared by DivisionSelect + festivals table)
-  auth.ts             ← token helpers + authFetch (Bearer header, 401 → login redirect); getMe() (cached /admin/me), canAccess/isSuperAdmin RBAC helpers, RESOURCES list
-  verify.ts           ← shared admin verify helpers: formatVerified() (ISO → human date) + verifyRecord(basePath, id, verified) POSTing /admin/<res>/{id}/verify (sets Content-Type). Used by the Foods/Festivals/Emergency-Contacts tables
-```
-
-## Verify workflow (admin record review)
-
-Every content tab lets staff mark a record reviewed. The **Foods / Festivals / Emergency Contacts** tables show a "Verified" column (✓ Verified + date/who, or ○ Needs review) and a **Mark verified / Un-verify** row action calling `verifyRecord()` (`lib/verify.ts`) → `POST /admin/<res>/{id}/verify`, then patch the row's `verified`/`verified_at`/`verified_by` via the table's `onXChange` updater. The **Places** equivalent is coordinate-specific and lives on the **Maps** tab (`/admin/maps`, `verify-coordinates` + `coordinates_verified*`). The Maps tab renders **keyless** Google embeds (no API key) and defaults to a **"Side by side"** view — stored-coordinate pin next to Google's name-search — so staff eyeball a match in one glance; the mode (Side by side / Stored / Search by name) is sticky across selections. Because the keyless iframe can't be read back, a **"Set coordinates from Google Maps"** box lets staff paste a Google Maps URL or a `lat, lng` (right-click → "What's here?"); `parseLatLng()` extracts it (`!3d..!4d..` → `@lat,lng` → `q=`/`ll=` → bare pair), warns if outside Nepal, and **Apply** opens the edit form prefilled so Save goes through the full-object `PUT` (server recomputes geohash). "Open in Google Maps" is mode-aware (stored `q=lat,lng` vs `/maps/search/?api=1&query=<name>`). Emergency contacts also keep a separate domain **"Last verified"** date column (`last_verified`) — distinct from the admin `verified` review flag. Missing `verified` is treated as `false`, so the UI degrades gracefully before the backend columns deploy.
-
-## Dev & Build
-
-This project uses **pnpm** (shared content-addressable store → far less disk than npm's per-project `node_modules`). The pinned version lives in `package.json` `packageManager`.
+## Commands
 
 ```bash
 pnpm install
-pnpm dev           # http://localhost:3000 (Turbopack)
-pnpm build         # static export → out/   (also runs TypeScript check)
+pnpm dev     # http://localhost:3000
+pnpm build   # static export to out/ (also type-checks)
+pnpm lint
 ```
 
-> pnpm blocks dependency build scripts by default. The native ones this project needs (`sharp`, `unrs-resolver`) are allow-listed in `pnpm-workspace.yaml` (`allowBuilds:`) — pnpm 11 reads project settings there, not from a `pnpm` field in `package.json`.
+pnpm version is pinned in `package.json` (`packageManager`). Native build scripts (`sharp`, `unrs-resolver`) are allow-listed in `pnpm-workspace.yaml` under `allowBuilds:`; pnpm 11 reads settings there, not from `package.json`.
 
-Set `NEXT_PUBLIC_BACKEND_URL` in `.env.local` to point at the local or remote backend:
-```
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-```
+## Environment
 
-## Deployment
+| Var | Where | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_BACKEND_URL` | `.env.local` locally; GitHub Actions repo variable in CI | Backend base URL. Falls back to `http://localhost:8000` (`lib/config.ts`). Inlined at build time. |
 
-Pushes to `main` trigger `.github/workflows/deploy.yml` which:
-1. Installs deps, runs `next build` (injects `NEXT_PUBLIC_BACKEND_URL` from GitHub Actions variable)
-2. Uploads `out/` as a Pages artifact and deploys via `actions/deploy-pages`
+## Layout
 
-**GitHub Pages source** must be set to **"GitHub Actions"** (not "Deploy from a branch") in repo Settings → Pages.
+- `app/` routes; `app/layout.tsx` holds site metadata and mounts `BackendPing`
+- `components/` admin tables (`*Table.tsx`), add/edit modals (`*Modal.tsx`), pickers (`DivisionSelect`, `PlaceMultiSelect`), `AdminHeader`, `BackendPing`
+- `lib/config.ts` `BACKEND_URL`; `lib/auth.ts` token, `authFetch`, `getMe`, RBAC helpers; `lib/divisions.ts` cached divisions; `lib/verify.ts` verify toggle
+- `public/llms.txt` brief for AI answer engines
 
-The `NEXT_PUBLIC_BACKEND_URL` Actions variable is set to `https://neptou-backend-5v5u.onrender.com`.
+## Routes
 
-## Backend Connection
+All backend calls go to `${BACKEND_URL}`. Admin endpoints are unversioned `/admin/...`.
 
-All admin calls go through `authFetch()` in `lib/auth.ts` — it attaches the Bearer token from `localStorage`, and on a missing token or a 401 it clears the token, redirects to `/admin/login/`, and throws `AuthError` (callers catch and ignore it). There is no middleware: this is a static export, so real access control is the backend's JWT check; the client-side redirect is UX only. Public calls (login, setup, `/health`) use plain `fetch` with `BACKEND_URL` from `lib/config.ts`.
+| Route | What it does | Backend calls |
+|---|---|---|
+| `/` | Marketing homepage, FAQ, JSON-LD, App Store links | none (`/health` ping from layout) |
+| `/privacy` | Privacy policy | none |
+| `/admin` | Redirects to `/admin/dashboard` | none |
+| `/admin/setup` | First-run super-admin creation; redirects to login if already set up | `GET /admin/status`, `POST /admin/register` |
+| `/admin/login` | Login, stores JWT | `POST /admin/login` |
+| `/admin/dashboard` | Places search, filter, CRUD | `/admin/places`, `/admin/places/filters`, `/admin/divisions` |
+| `/admin/maps` | Check/fix place coordinates against keyless Google Maps embeds | `/admin/places`, `/admin/places/filters`, `POST /admin/places/{id}/verify-coordinates` |
+| `/admin/foods` | Foods CRUD | `/admin/foods` |
+| `/admin/festivals` | Festivals and jatras CRUD, district picker | `/admin/festivals`, `/admin/divisions` |
+| `/admin/hotels` | Hotels CRUD (not in iOS yet) | `/admin/hotels`, `/admin/divisions` |
+| `/admin/guides` | Tour guides CRUD, places-covered picker (not in iOS yet) | `/admin/guides`, `/admin/places` |
+| `/admin/emergency-contacts` | Emergency contacts CRUD | `/admin/emergency-contacts`, `/admin/emergency-contacts/filters` |
+| `/admin/team` | Super-admin only: admins, roles, per-resource permissions, password resets | `/admin/admins`, `/admin/admins/{id}/password` |
 
-`BackendPing` fires a silent `GET /health` on every page load to warm up the Render free-tier instance before users reach the admin panel — no UI impact on failure.
+Every admin page also uses `GET /admin/me` (identity and permissions), `POST /admin/me/password` (change own password) and `POST /admin/logout` via `AdminHeader`. CRUD is `GET` list with query params, `POST` create, `PUT /{id}` full-object update, `DELETE /{id}`.
 
-## SEO
+## Conventions
 
-The public site is live-marketing for the App Store app (<https://apps.apple.com/app/neptou/id6756244066>, live since build 17, 2026-07-07).
+- **Static export only** (`output: "export"`, `trailingSlash: true`, `images.unoptimized`). No server code, middleware, route handlers or server actions at runtime. Everything dynamic is a client-side fetch to the backend.
+- **Auth**: JWT in `localStorage` (`admin_token`). Admin calls must go through `authFetch()`, which adds the Bearer header and on a missing token or 401 clears it, redirects to `/admin/login/`, and throws `AuthError` (callers catch and ignore it). The redirect is UX only; the backend JWT check is the real enforcement. Only login, setup, logout and `/health` use plain `fetch`.
+- **RBAC in the UI**: `getMe()` (cached) supplies role and permissions. `AdminHeader` hides tabs via `canAccess(me, resource)`; the Team link needs `isSuperAdmin`. Resource keys in `RESOURCES` mirror the backend's list.
+- **Verify workflow**: Foods, Festivals, Hotels, Guides and Emergency Contacts tables show a verified column and a toggle via `verifyRecord()` (`POST /admin/<res>/{id}/verify`). Places use coordinate verification on the Maps tab instead. Missing `verified` is treated as `false`. Emergency contacts' `last_verified` is a separate domain field, not the review flag.
+- **Table updaters**: tables take `onXChange(updater: (prev) => next)`, not a plain array setter; wrap `setState` accordingly.
+- **Divisions**: use `getDivisions()` / `DivisionSelect` rather than fetching `/admin/divisions` again; records store `division_id`.
+- **Styling**: Tailwind utility classes; Geist fonts via `next/font` in `layout.tsx`.
 
-- **Metadata** (`app/layout.tsx`): `metadataBase = https://neptou.github.io`, title template, keywords, canonical, full Open Graph + Twitter card (OG image = `/logo.png`), `robots` index/follow. Relative image/canonical URLs resolve against `metadataBase`.
-- **Structured data** (`app/page.tsx`): inline JSON-LD `@graph` with `MobileApplication` (free iOS app, `downloadUrl` → App Store), `WebSite`, and `Organization`.
-- **`sitemap.ts` / `robots.ts`**: both need `export const dynamic = "force-static"` — without it `next build` fails under `output: "export"`. They emit `/sitemap.xml` and `/robots.txt`. Add new public routes to `sitemap.ts` (admin stays out via robots `disallow`).
-- **Homepage CTAs** are live App Store links (`APP_STORE_URL` in `page.tsx`) — the old "coming soon" placeholders were removed. If the app is ever pulled, revert those to the notify/email flow.
+## SEO and AEO
 
-**Post-deploy setup:** `SEO-CHECKLIST.md` (repo root) — one-time Search Console / Bing / structured-data steps to run after a deploy.
+- Site metadata, Open Graph, Twitter card and Apple Smart App Banner (`itunes.appId`) live in `app/layout.tsx`. The canonical site URL is hardcoded as `https://neptou.github.io` in `layout.tsx`, `sitemap.ts` and `robots.ts`.
+- `app/page.tsx` renders the FAQ section and the JSON-LD (`MobileApplication`, `WebSite`, `Organization`, `FAQPage`) from the same `faqs` array, so visible text and structured data stay identical.
+- `robots.ts` allows all, explicitly lists AI crawlers (`AI_CRAWLERS`), and disallows `/admin/`. Add new public routes to `sitemap.ts`.
+- When app features change, update all of: homepage copy and `features`/`stats`, `faqs`, JSON-LD `featureList`, the `layout.tsx` description, `public/llms.txt`, and `app/privacy/page.tsx`.
+- `public/googlebe42a8f4168a1995.html` is the Google Search Console verification file. Do not delete it.
 
-### AEO (AI answer-engine optimization)
+## Deploy
 
-So AI assistants (ChatGPT, Claude, Perplexity, Gemini, Apple Intelligence, …) can crawl and recommend the app:
+Push to `main` runs `.github/workflows/deploy.yml`: `pnpm install --frozen-lockfile`, `pnpm run build` with `NEXT_PUBLIC_BACKEND_URL` from the Actions variable, adds `out/.nojekyll`, deploys via `actions/deploy-pages`. Repo Settings > Pages source must be "GitHub Actions".
 
-- **`robots.ts`** explicitly allows a list of AI crawler user-agents (`AI_CRAWLERS`: GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, etc.), each `allow: /` + `disallow: /admin/`. Default is allow-all anyway; the explicit entries make intent durable. Add/trim the list there.
-- **`public/llms.txt`** (served at `/llms.txt`, [llmstxt.org](https://llmstxt.org) convention): a markdown brief — summary, key facts, features, links, FAQ. Keep it in sync with the homepage when facts change.
-- **FAQ**: the `faqs` array in `page.tsx` renders a visible `<details>` FAQ section **and** a `FAQPage` JSON-LD entry from the same source (visible text must match the structured data). Phrase questions the way users ask assistants. `MobileApplication`/`Organization` also carry `sameAs` (App Store) + `featureList`.
+## Gotchas
 
-## Key Patterns
-
-- **Auth flow**: login → JWT stored in `localStorage` via `setToken()` → all admin requests via `authFetch()` (adds header, handles missing-token and 401 by redirecting to login)
-- **Static export**: no server-side code at runtime; all API calls are client-side fetches to the Render backend
-- **`trailingSlash: true`**: all routes have trailing slashes (required for GitHub Pages path resolution)
-- **`onPlacesChange` prop**: `PlacesTable` takes `(updater: (prev: Place[]) => Place[]) => void` — callers must wrap `setState` accordingly (see `dashboard/page.tsx`)
+- `sitemap.ts` and `robots.ts` need `export const dynamic = "force-static"` or the export build fails.
+- `authFetch` only sets the auth header. Requests with a JSON body must set `Content-Type: application/json` themselves, or FastAPI will not parse the body.
+- `NEXT_PUBLIC_BACKEND_URL` is baked in at build time; changing the Actions variable needs a rebuild.
+- The backend is on Render's free tier and cold-starts. `BackendPing` fires `GET /health` on every page load to warm it; expect the first admin request after idle to be slow.
+- The Maps tab's Google embed is keyless and cannot be read back; staff paste a Maps URL or `lat, lng`, and Save goes through the normal place `PUT` (backend recomputes geohash).
