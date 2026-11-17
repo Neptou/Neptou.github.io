@@ -191,7 +191,7 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
               handled, please contact:
             </p>
             <div className="mt-4 bg-gray-900 border border-gray-800 rounded-2xl p-5 text-sm space-y-1">
-              <p className="text-white font-medium">Subodh Kathayat</p>
+              <p className="text-white font-medium">Neptou Team</p>
               <p className="text-gray-400">Neptou — Nepal Travel Guide</p>
               <a
                 href="mailto:hello@neptou.com"
