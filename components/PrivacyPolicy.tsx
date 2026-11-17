@@ -125,8 +125,15 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">Sharing</h2>
             <p>
-              We do <strong className="text-white">not</strong> sell, rent, share or trade personal
-              information. We don&apos;t hold any personal information to share.
+              We do <strong className="text-white">not</strong> sell, rent or trade personal
+              information, and we do not share it for advertising or tracking. Apart from the IP
+              address that reaches the services above when content loads, nothing about you leaves
+              your device.
+            </p>
+            <p className="mt-3">
+              Our server keeps standard request logs (IP address, time and the page of content
+              requested) for a short period for security and troubleshooting. They are not linked to
+              you or used for anything else.
             </p>
           </section>
 
