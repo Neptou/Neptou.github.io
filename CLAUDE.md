@@ -41,7 +41,7 @@ All backend calls go to `${BACKEND_URL}`. Admin endpoints are unversioned `/admi
 | Route | What it does | Backend calls |
 |---|---|---|
 | `/` | Marketing homepage, FAQ, JSON-LD, App Store links | none (`/health` ping from layout) |
-| `/privacy` | Privacy policy | none |
+| `/privacy`, `/privacy/ios`, `/privacy/android` | Privacy policy: all platforms, and one per store listing (App Store Connect → `ios`, Play Console → `android`). Text lives once in `components/PrivacyPolicy.tsx` | none |
 | `/admin` | Redirects to `/admin/dashboard` | none |
 | `/admin/setup` | First-run super-admin creation; redirects to login if already set up | `GET /admin/status`, `POST /admin/register` |
 | `/admin/login` | Login, stores JWT | `POST /admin/login` |
