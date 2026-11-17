@@ -30,7 +30,7 @@ Tourists, trekkers, and travelers planning or taking a trip to Nepal who want a 
 - [Homepage](https://neptou.github.io/)
 - [Download on the App Store](https://apps.apple.com/app/neptou/id6756244066)
 - [Privacy Policy](https://neptou.github.io/privacy/)
-- [Support](mailto:kathayatsubodh@gmail.com)
+- [Support](mailto:hello@neptou.com)
 
 ## FAQ
 

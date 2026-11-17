@@ -28,7 +28,7 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
           <span className="font-semibold text-lg tracking-tight">Neptou</span>
         </Link>
         <a
-          href="mailto:kathayatsubodh@gmail.com"
+          href="mailto:hello@neptou.com"
           className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
         >
           Contact Support
@@ -159,10 +159,10 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
             <p className="mt-3">
               Questions? Contact us at{" "}
               <a
-                href="mailto:kathayatsubodh@gmail.com"
+                href="mailto:hello@neptou.com"
                 className="text-red-400 hover:text-red-300 transition-colors"
               >
-                kathayatsubodh@gmail.com
+                hello@neptou.com
               </a>
               . We will respond within 30 days.
             </p>
@@ -187,10 +187,10 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
               <p className="text-white font-medium">Subodh Kathayat</p>
               <p className="text-gray-400">Neptou — Nepal Travel Guide</p>
               <a
-                href="mailto:kathayatsubodh@gmail.com"
+                href="mailto:hello@neptou.com"
                 className="text-red-400 hover:text-red-300 transition-colors"
               >
-                kathayatsubodh@gmail.com
+                hello@neptou.com
               </a>
             </div>
           </section>
@@ -215,7 +215,7 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
             <Link href="/privacy" className="hover:text-gray-300 transition-colors">
               Privacy Policy
             </Link>
-            <a href="mailto:kathayatsubodh@gmail.com" className="hover:text-gray-300 transition-colors">
+            <a href="mailto:hello@neptou.com" className="hover:text-gray-300 transition-colors">
               Support
             </a>
           </div>

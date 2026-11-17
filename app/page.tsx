@@ -171,7 +171,7 @@ export default function HomePage() {
               Get it on iOS — Free
             </a>
             <a
-              href="mailto:kathayatsubodh@gmail.com"
+              href="mailto:hello@neptou.com"
               className="inline-flex items-center justify-center gap-2 border border-gray-700 text-gray-300 px-7 py-3.5 rounded-2xl hover:border-gray-500 hover:text-white transition-colors"
             >
               Contact support →
@@ -197,7 +197,7 @@ export default function HomePage() {
             <a href="/privacy" className="hover:text-gray-300 transition-colors">
               Privacy Policy
             </a>
-            <a href="mailto:kathayatsubodh@gmail.com" className="hover:text-gray-300 transition-colors">
+            <a href="mailto:hello@neptou.com" className="hover:text-gray-300 transition-colors">
               Support
             </a>
           </div>
@@ -283,7 +283,7 @@ const structuredData = {
       name: "Neptou",
       url: SITE_URL,
       logo: `${SITE_URL}/logo.png`,
-      email: "kathayatsubodh@gmail.com",
+      email: "hello@neptou.com",
       sameAs: [APP_STORE_URL],
     },
     {
