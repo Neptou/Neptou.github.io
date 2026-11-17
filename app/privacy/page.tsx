@@ -26,105 +26,104 @@ export default function PrivacyPage() {
       {/* Content */}
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-16">
         <h1 className="text-4xl font-bold mb-2">Privacy Policy</h1>
-        <p className="text-gray-400 text-sm mb-12">Last updated: June 6, 2026</p>
+        <p className="text-gray-400 text-sm mb-12">Last updated: November 17, 2026</p>
 
         <div className="space-y-10 text-gray-300 leading-relaxed">
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">Overview</h2>
             <p>
-              Neptou (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a Nepal travel companion app. This Privacy
-              Policy explains what information we collect when you use the Neptou iOS app, how we
-              use it, and your rights regarding that information. We are committed to handling your
-              data responsibly and transparently.
+              Neptou (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a Nepal travel companion app for iOS and
+              Android. This Privacy Policy explains what information the app uses, where it is kept,
+              and your choices. In short: Neptou has no accounts, no ads and no analytics, and your
+              personal information stays on your device.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">Information We Collect</h2>
+            <h2 className="text-xl font-semibold text-white mb-3">Information on Your Device</h2>
 
-            <h3 className="text-base font-semibold text-gray-200 mb-2 mt-4">Location Data</h3>
+            <h3 className="text-base font-semibold text-gray-200 mb-2 mt-4">Location</h3>
             <p>
-              With your explicit permission, Neptou accesses your device&apos;s location while the app
-              is in use. This is used solely to:
+              With your permission, Neptou uses your device&apos;s location while the app is open to:
             </p>
             <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-              <li>Show places near your current position</li>
-              <li>Sort search results by proximity</li>
-              <li>Display your location on the in-app map</li>
+              <li>Show your position on the in-app map</li>
+              <li>Show places near you and sort results by distance</li>
             </ul>
             <p className="mt-3 text-sm text-gray-400">
-              Your location is processed on-device and is never transmitted to our servers or stored
-              persistently. You can revoke location permission at any time in iOS Settings.
+              Your location is used only on your device. It is never sent to our servers or anyone
+              else, and it is not stored. Neptou never uses your location in the background.
             </p>
 
-            <h3 className="text-base font-semibold text-gray-200 mb-2 mt-6">Profile & Preferences</h3>
+            <h3 className="text-base font-semibold text-gray-200 mb-2 mt-6">Profile, Saved Places and Trips</h3>
             <p>
-              If you create an account, we store your travel interests and preferences (e.g.,
-              adventure, culture, food) to generate personalized place recommendations. This
-              information is stored securely and used only within the app to improve your experience.
+              Your travel style, interests, saved and liked places, and trips are stored only on your
+              device. Neptou has no accounts, and this information is never uploaded. Deleting the app
+              deletes it.
             </p>
-
-            <h3 className="text-base font-semibold text-gray-200 mb-2 mt-6">Saved Places</h3>
-            <p>
-              Places you save or add to trips are stored locally on your device and, if you are
-              signed in, synced to your account so they are available across reinstalls.
+            <p className="mt-3">
+              If you choose to add a trip to your calendar or open a place in a maps app, Neptou hands
+              that item to the app you pick; what happens next is covered by that app&apos;s own policy.
             </p>
 
             <h3 className="text-base font-semibold text-gray-200 mb-2 mt-6">Usage Data</h3>
             <p>
-              We do not use third-party analytics SDKs. We do not collect crash logs, session
-              recordings, or behavioral tracking data through third-party services.
+              We do not use analytics, advertising or crash-reporting services, and we do not track
+              you across apps or websites.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">How We Use Your Information</h2>
-            <p>Information collected is used exclusively to:</p>
+            <h2 className="text-xl font-semibold text-white mb-3">What the App Downloads</h2>
+            <p>
+              To show up-to-date content, the app downloads information from these services. It does
+              not send them your name, location, profile or any identifier, but like any website they
+              receive your device&apos;s IP address and the request itself (for example, which map
+              area to draw):
+            </p>
             <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-              <li>Provide core app features (nearby places, map, trip planner)</li>
-              <li>Generate personalized recommendations based on your stated interests</li>
-              <li>Sync your saved places and trips across devices</li>
+              <li>Our server (places, foods, travel routes and emergency contacts)</li>
+              <li>OpenFreeMap, for map tiles built from OpenStreetMap data (Android)</li>
+              <li>Apple Maps, for maps on iOS</li>
+              <li>Wikimedia Commons and other image hosts, for place photos</li>
             </ul>
             <p className="mt-3">
-              We do <strong className="text-white">not</strong> sell, rent, share, or trade your
-              personal information with third parties for advertising or marketing purposes.
+              Downloaded places, map areas you have viewed and photos are kept on your device so the
+              app works with a weak or no connection. You can clear the saved maps and photos at any
+              time in Profile → Storage. All connections use HTTPS.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">Data Storage & Security</h2>
+            <h2 className="text-xl font-semibold text-white mb-3">Sharing</h2>
             <p>
-              App data is stored using industry-standard cloud infrastructure with encryption at rest
-              and in transit. Account credentials are handled securely and passwords are never stored
-              in plain text.
-            </p>
-            <p className="mt-3">
-              Place data (descriptions, images, coordinates) is bundled directly in the app and does
-              not require an internet connection to browse.
+              We do <strong className="text-white">not</strong> sell, rent, share or trade personal
+              information. We don&apos;t hold any personal information to share.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">Children&apos;s Privacy</h2>
             <p>
-              Neptou is not directed at children under the age of 13. We do not knowingly collect
-              personal information from children under 13. If you believe a child has provided us
-              with personal data, please contact us and we will delete it promptly.
+              Neptou is not directed at children under the age of 13 and does not knowingly collect
+              personal information from anyone.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">Your Rights</h2>
-            <p>You have the right to:</p>
+            <h2 className="text-xl font-semibold text-white mb-3">Your Choices</h2>
             <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-              <li>Access the personal data we hold about you</li>
-              <li>Request correction of inaccurate data</li>
-              <li>Request deletion of your account and associated data</li>
-              <li>Withdraw location permission at any time via iOS Settings → Privacy → Location Services</li>
+              <li>
+                Turn location access off at any time: on iPhone in Settings → Privacy &amp; Security →
+                Location Services → Neptou; on Android in Settings → Apps → Neptou → Permissions →
+                Location
+              </li>
+              <li>Clear saved maps and photos in the app under Profile → Storage</li>
+              <li>Delete the app to remove everything Neptou has stored on your device</li>
             </ul>
             <p className="mt-3">
-              To exercise any of these rights, contact us at{" "}
+              Questions? Contact us at{" "}
               <a
                 href="mailto:kathayatsubodh@gmail.com"
                 className="text-red-400 hover:text-red-300 transition-colors"
