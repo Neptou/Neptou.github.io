@@ -1,9 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
+import LegalPage, { ContactCard, LEGAL_LINK as LINK } from "@/components/LegalPage";
 
 export type PrivacyPlatform = "all" | "ios" | "android";
-
-const LINK = "text-red-400 hover:text-red-300 transition-colors";
 
 /**
  * The privacy policy. `/privacy/` shows every platform; `/privacy/ios/` and `/privacy/android/`
@@ -13,36 +11,9 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
   const ios = platform !== "android";
   const android = platform !== "ios";
   const appName = { all: "app for iOS and Android", ios: "app for iOS", android: "app for Android" }[platform];
+  const title = { all: "Privacy Policy", ios: "Privacy Policy — iOS", android: "Privacy Policy — Android" }[platform];
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-white font-[family-name:var(--font-geist-sans)]">
-      {/* Nav */}
-      <nav className="px-6 py-5 flex items-center justify-between max-w-7xl mx-auto w-full">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image
-            src="/logo.png"
-            alt="Neptou"
-            width={36}
-            height={36}
-            className="rounded-xl shadow-lg"
-          />
-          <span className="font-semibold text-lg tracking-tight">Neptou</span>
-        </Link>
-        <a
-          href="mailto:hello@neptou.com"
-          className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-        >
-          Contact Support
-        </a>
-      </nav>
-
-      {/* Content */}
-      <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-16">
-        <h1 className="text-4xl font-bold mb-2">
-          Privacy Policy{platform === "ios" && " — iOS"}{platform === "android" && " — Android"}
-        </h1>
-        <p className="text-gray-400 text-sm mb-12">Last updated: November 17, 2026</p>
-
-        <div className="space-y-10 text-gray-300 leading-relaxed">
+    <LegalPage title={title} lastUpdated="November 17, 2026">
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">Overview</h2>
@@ -190,44 +161,9 @@ export default function PrivacyPolicy({ platform }: { platform: PrivacyPlatform 
               If you have any questions or concerns about this Privacy Policy or how your data is
               handled, please contact:
             </p>
-            <div className="mt-4 bg-gray-900 border border-gray-800 rounded-2xl p-5 text-sm space-y-1">
-              <p className="text-white font-medium">Neptou Team</p>
-              <p className="text-gray-400">Neptou — Nepal Travel Guide</p>
-              <a
-                href="mailto:hello@neptou.com"
-                className="text-red-400 hover:text-red-300 transition-colors"
-              >
-                hello@neptou.com
-              </a>
-            </div>
+            <ContactCard />
           </section>
 
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-800 px-6 py-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="Neptou"
-              width={20}
-              height={20}
-              className="rounded"
-            />
-            <span>© {new Date().getFullYear()} Neptou. All rights reserved.</span>
-          </div>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-gray-300 transition-colors">
-              Privacy Policy
-            </Link>
-            <a href="mailto:hello@neptou.com" className="hover:text-gray-300 transition-colors">
-              Support
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </LegalPage>
   );
 }

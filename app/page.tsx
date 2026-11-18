@@ -197,6 +197,9 @@ export default function HomePage() {
             <a href="/privacy" className="hover:text-gray-300 transition-colors">
               Privacy Policy
             </a>
+            <a href="/terms" className="hover:text-gray-300 transition-colors">
+              Terms of Service
+            </a>
             <a href="mailto:hello@neptou.com" className="hover:text-gray-300 transition-colors">
               Support
             </a>

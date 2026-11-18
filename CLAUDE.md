@@ -42,6 +42,7 @@ All backend calls go to `${BACKEND_URL}`. Admin endpoints are unversioned `/admi
 |---|---|---|
 | `/` | Marketing homepage, FAQ, JSON-LD, App Store links | none (`/health` ping from layout) |
 | `/privacy`, `/privacy/ios`, `/privacy/android` | Privacy policy: all platforms, and one per store listing (App Store Connect → `ios`, Play Console → `android`). Text lives once in `components/PrivacyPolicy.tsx` | none |
+| `/terms` | Terms of Service for both apps (Play Console trader/ToS page). Legal pages share `components/LegalPage.tsx` | none |
 | `/admin` | Redirects to `/admin/dashboard` | none |
 | `/admin/setup` | First-run super-admin creation; redirects to login if already set up | `GET /admin/status`, `POST /admin/register` |
 | `/admin/login` | Login, stores JWT | `POST /admin/login` |
@@ -71,7 +72,7 @@ Every admin page also uses `GET /admin/me` (identity and permissions), `POST /ad
 - Site metadata, Open Graph, Twitter card and Apple Smart App Banner (`itunes.appId`) live in `app/layout.tsx`. The canonical site URL is hardcoded as `https://neptou.github.io` in `layout.tsx`, `sitemap.ts` and `robots.ts`.
 - `app/page.tsx` renders the FAQ section and the JSON-LD (`MobileApplication`, `WebSite`, `Organization`, `FAQPage`) from the same `faqs` array, so visible text and structured data stay identical.
 - `robots.ts` allows all, explicitly lists AI crawlers (`AI_CRAWLERS`), and disallows `/admin/`. Add new public routes to `sitemap.ts`.
-- When app features change, update all of: homepage copy and `features`/`stats`, `faqs`, JSON-LD `featureList`, the `layout.tsx` description, `public/llms.txt`, and `app/privacy/page.tsx`.
+- When app features change, update all of: homepage copy and `features`/`stats`, `faqs`, JSON-LD `featureList`, the `layout.tsx` description, `public/llms.txt`, `components/PrivacyPolicy.tsx` and `app/terms/page.tsx`.
 - `public/googlebe42a8f4168a1995.html` is the Google Search Console verification file. Do not delete it.
 
 ## Deploy
